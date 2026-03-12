@@ -1,0 +1,164 @@
+// Phy Layer Configs
+
+useFixedSeed = true;
+// seed initialization is random when seed is 0
+seed = 4703;
+outputFilePrintFrequency = 0.01;
+simulationTimeInSec = 0.1;
+// For the Performance metrics computation, Initial subframes may be avoided by setting the following parameter
+settlingTimeInSec=0;
+isForCalibration = false;
+
+/* Link Level Simulation Info *//////////////////////////////////////////////////////////////////////
+
+enableLinkLevelSimulation=false;
+
+//SNR Details
+minimumSNR=-3;
+maximumSNR=30;
+stepSizeForSNR=3;
+
+//Transmission Info
+enableFEC=true;
+
+// if enableFEC=false
+modulationScheme=_MODULATION_SCHEME_QPSK_;
+
+// if enableFEC=true
+cqiIndex=3;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ulDlMode=_ULDL_MODE_DOWNLINK_;
+TDDConfigPerServerNodeType=[0 0];
+SpecialSubframeConfig=0;//0-9 only for TDD and normalCP
+
+isWithAbstraction=true;
+AbstractionModel=_ABSTRACTION_DECODER_;       //options   _ABSTRACTION_DECODER_, _ABSTRACTION_IDEAL_
+
+//Turbo Decoder Type: Options, LOG_MAP, MAX_LOG_MAP
+TurboDecoderType=LOG_MAP;
+
+strongInterferersToSimulate=57;
+modelWeakInterferenceAsNoise=false;
+
+// Association method: Options _RSRP_, _RSRQ_, _PATHLOSS_
+InitialAssociationMetric=_RSRP_;
+
+// Pico Related
+picoBias=0;
+
+// Facility to use Almost Blank Subframes (ABS)
+isWithABS=false;
+// This specifies Almost Blank Subframe pattern - Periodicity is set as 40
+ABSPattern = [0 1 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 1 1 1 0 0 0 0];
+
+//CoMP Related
+isWithCoMP=false;
+compScheme=_DPS_;
+maximumCoMPSetSize=-1;
+maximumCoMPSets=-1;
+
+//MBSFN
+isWithMBSFN=false;
+
+//Users Per Sector
+maximumServiceNodesPerServerNode=-1;
+
+
+//! ControlChannels
+enableControlChannels=false;
+
+enableRestrictionForReTx=false;
+maximumServiceNodesPerSubframe=-1;
+
+// ResourceMapper Info
+isLocalised=true;
+
+
+/*User Mobility Modelling*/
+enableUserMobility=false;
+mobilityType = _MOBILITY_TYPE_RND_WALK_;
+refreshDistanceInMetres=0.5;
+refreshDistanceForRandomWalk = 10000;
+
+/*Restricted Reception: If enabled, single BS receception */
+enableRestrictedReception=false;
+serverNodesWithActualReception=[0];
+
+
+/* Random Load */
+enableRandomLoad=false;
+loadPerServerNode=50;
+
+
+// RRM Related
+isRRMEnabled=false;
+isAssociationBasedOnRSRP=false;
+intialAssociationWindow=200;
+
+
+//Node deactivator
+enableServiceNodeDeactivator=false;
+deactivatorServiceNodeList=[];
+
+//Sidelink Flag 
+enableSidelink=false;
+
+
+//PUCCH
+isPUCCHEnabled=false;
+
+//SRS
+isSRSEnabled=false;
+
+//PRACH
+isPRACHEnabled=false;
+
+//RRC
+isRRCEnabled=false; 
+
+//X2
+isX2Enabled=false;
+
+//FFR
+//      x+A 
+//  B   ----   x   x
+//-----\    \----\----
+//---------------------
+//     B              1 
+//
+
+enableFFR=false;
+FFRAlpha=2; // 0-3 
+FFRBeta=1;  // 0-1  - Will be adjusted to the closest RBG during simulation
+
+//Multi-Operator Related 
+isMultiOperator=false;
+distanceBetweenOperators=0.0;
+bandGapMHz=2.5;
+
+//configuration of different antennas to different UEs Related
+isDiffAntDiffUEs=false; //feature enable
+//antennas to be configured are [2 4 8] 
+percentageToBeGiven=[50 50];// first index corresponds to 2 antenna, second index corresponds to 4 antenna 
+//percentage to be given for two antennas only,for third antenna percentage will be rest of the percentage
+//max percentage(100%) can be given to single antenna and make other antenna percentage to zero
+//if 100% to be given for 8 antenna, make percentage for 2 and 4 antenna to zero
+
+
+//API Related
+isAPIForPathLoss=false;
+isAPIForFadingChannelGen=false;
+isAPIForReciever=false;
+isAPIForCRSBasedChannelEstimation=false;
+isAPIForDMRSBasedChannelEstimation=false;
+isAPIForCQI=false;
+isAPIForPDP=false;//if true, please give tap delays and tap gains
+tapDelays=[0 0 0 0 0 0 0 0];
+tapGains=[0 0 0 0 0 0 0 0];
+
+//L2 OpenAPI
+isWithAPIForScheduler=false;
+isWithAPIForMIMOModeAdaptation=false;
+isWithAPIForABSeICIC=false;

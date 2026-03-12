@@ -1,0 +1,93 @@
+/*! This is config file for placing trace-flags. TraceFlags are automatically loaded into map traceValuePerTraceName.
+    Users can put any traces as,
+         <traceName> = <traceValue>
+
+    For example, to create debug-flag for CQIEstimator, make trace flag as follows,
+         CQIEstimator_DebugFlag = Enabled
+      Now to check the CQIEstimator_DebugFlag exists & Enabled, anywhere in the simulator, type as follows,
+         if(traceValuePerTraceName["CQIEstimator_DebugFlag"]=="Enabled")
+      Now to check if CQIEstimator_DebugFlag exists, use as follows,
+         if(traceValuePerTraceName.count("CQIEstimator_DebugFlag"))
+ Notes:
+   1. Comments like C++ manner, can be used in this file. (ParseAll function discards those comments)
+ TODO
+   1. Add support for ';' in parseAll function..
+*/
+
+//! Enable/Disable prints
+EnablePrints = true;
+
+//! Print CQI and MCS data into Files CQIlogs.txt and MCSlogs.txt
+EnableUElogs = true;
+
+//! Print schInfo and MU-MIMO data
+EnableBSlogs = true;
+
+EnableBeamInfo = true; // prints beamMgt Info for all NodeTypes
+printBeamRSRP = false; // prints beamRSRP for all Node,beam and panel Combinations. 
+
+printAntennaLocations = false; // prints location vector for antenna elements
+printAntennaGains = true;   // prints LOS and NLOS antenna gains. 
+
+//! Print time-domain channel into ChannelLogs.txt (only in Link-Level simulation)
+EnableChannelLogs = false;
+
+//! Print angle spread and other parameters for SCM links
+printSCMparams = false;
+
+//Max and Min Singular Values are printed.
+printSingularValues = false;
+printDetailedLogs = false;
+
+
+//! Generic Print Traces...
+printDLULMode = false;
+printPreProcessingSINR = false; printReceivedSignalPower = false; printReceivedInterferencePower = false
+printCorrectBitCount = false;
+printCQIReported = false;
+
+//! Print Association Info to file
+printAssociationInfo=true;
+printCLandSINRLogs=true; // coupling Gain and SINR will be printed to separate files. 
+printDetailedAssociationLogs=false;//Association Logs will be printed to all node combinations.
+printInitialAssociationFiles=false;
+
+//! Uplink Debug Traces...
+printUETxPower = false;
+prinTxNodeIDWhileReception = false;
+prinRxNodeIDWhileReception = false;
+prinTxNodeIDWhileReception_inRBLevel = false
+prinRxNodeIDWhileReception_inRBLevel = false
+printPreProcessingIoTtoFile = false;
+
+//! HARQ Debug Traces...
+printHARQDebugInfo = false;
+printHARQManagerDebugInfo = false;
+
+//! MAC Debug Trances
+printMacSchedulerDebug=false;
+printHataDebug=false;
+
+//! Frame Handler Level1 Testing
+frameHandlerLevel01TraceInfo=;
+
+// Enable PDSCH demod performance testing
+RITesting=false
+cqiawgntesting=false
+PUSCH_3_0caseA=false
+pdschDemodPerfTesting=false
+mcsValuesPerSubframePerCodeword = [19 19 19 19 19 19]; //! Applicable only for CQI Link level testcase only..
+widebandTxinonesubband=false;//! enables the transmission of data in a single subband(best subband) for HLconfigured subbandCQI 
+PUSCH_3_0caseBsubband=false
+PUSCH_3_0caseBwideband=false
+PUSCH_2_0subband=false
+PUSCH_2_0wideband=false
+schedule_in_aband=false
+
+
+//! If enabled, on subframe=fallBackSubframeNumber(mySimulationConfig.txt), fallback to SFBC happens,
+enableDefaultFallBack=false;
+/// NSK Level 1 test cases:
+referenceSignalGenerator_01_traceFlag=false;
+channelEstimator_01_00_traceFlag=false;
+channelEstimator_01_01_traceFlag=false;

@@ -1,0 +1,12 @@
+//configurable parameters for TCP
+//RX window size
+//TCPenabling
+//initial RTTavg value 
+//Number of possible retransmissions
+
+
+isTCPEnabled = 0; 
+mTcpRxWindowsize=60;
+
+
+

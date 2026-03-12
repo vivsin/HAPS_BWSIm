@@ -1,0 +1,213 @@
+/*! TABLE 1: Directions to set the transmit parameters
+
+_TRANSMISSION_MODE_1_    _SINGLE_PORT_CRS_	  	1	1	  	"0"		"0"
+_TRANSMISSION_MODE_2_    _TRANSMIT_DIVERSITY_	  	1	v=p	  	"0 1"/"0 1 2 3"	"0 1"/"0 1 2 3"
+_TRANSMISSION_MODE_3_    _LARGE_DELAY_CDD_	  	1/2	[2,p]		"0 1"/"0 1 2 3"	"0 1"/"0 1 2 3"
+_TRANSMISSION_MODE_4_    _CL_SM_		  	1/2	[2,p]		"0 1"/"0 1 2 3"	"0 1"/"0 1 2 3"
+_TRANSMISSION_MODE_5_    _CL_MU_MIMO_		  	2	1/2	  	"0 1"/"0 1 2 3"	"0 1"/"0 1 2 3"
+_TRANSMISSION_MODE_6_    _CL_BF_ 		  	1	1	  	"0 1"/"0 1 2 3"	"0 1"/"0 1 2 3"
+_TRANSMISSION_MODE_7_    _SINGLE_PORT_DMRS_	  	1	1	  	"5"/"7"/"8"	"15"
+_TRANSMISSION_MODE_8_    _CL_2LAYERS_DMRS_ 		1	2	  	"7 8"		"15 16"
+_TRANSMISSION_MODE_9_    _CL_MAX8LAYERS_DMRS_ 		2	1<=v<=p  	"7 8...7+v-1"	"15 16"/"15 16 17 18"/"15 16...22"
+_TRANSMISSION_MODE_NR_    _CL_MAX8LAYERS_DMRS_ 		2	1<=v<=p  	"7 8...7+v-1"	"15 16"/"15 16 17 18"/"15 16...22"
+Conditions:
+~~~~~~~~~~~~~
+1) For TMs 1 to 6 DeModPorts ~ CQIports ~ CRSports.(treat ~ same as = (as = has creates parsing problems))
+2) For TMs 7 to 9 DeModPorts ~ DMRSports, CQIports ~ CSIRSports.
+3) #CQIports (CRS/CSIRS) can be either {1,2,4} or {1,2,4,8} #ports respectively.
+4) In case of TM 5 (CL-MU-MIMO) specify nLayers=1;
+5) For all TMs nCodeWords=1;
+6) For TMs 7,8,9 #DMRSports must be equal to nLayers=2;
+7) DemodulationScheme is preferably MMSE for all TMs except TM 2 where MRC is preferred.
+
+Limitations:
+~~~~~~~~~~~~~
+1) TM 5 (CL-MU-MIMO) cannot support more than 2 UEs
+2) TM 9 cannot support single CQIport setting (DeModPorts ~ "7", CQIports ~ "15") this can be simulated in TM 7.
+3) CRS is not transmitted in case of TMs 7,8,9.
+
+Explanation:
+~~~~~~~~~~~~~
+1) CRS: not precoded, DMRS: precoded, CSIRS: not precoded.
+2) DeModPorts are ports used for DeModulation at the receiver. This can be either CRS/DMRS but not CSIRS (as it is not precoded and the precoder is not transparent in TMs 8,9 (expect possibly in TM 7)).
+3) CQIports are used for CSI computation at the receiver. This can be either CRS/CSIRS but not DMRS (as we need raw channel and DMRS gives only precoded channel).
+4) Difference between CRS based CL schemes(TMs 4,5,6) and CSIRS based CL schemes(TMs 8,9) is, with CRS though it is CL the precoder is transparent to the UE but with CSIRS it is not transparent and requires additional DMRS for demodulation.
+
+
+TABLE 2: Directions to set the AperiodicMode and PeriodicMode parameters
+
+				  AperiodicMode			   PeriodicMode
+_TRANSMISSION_MODE_1_		_APERIODIC_MODE_3_0_		_PERIODIC_MODE_1_0_
+				_APERIODIC_MODE_2_0_		_PERIODIC_MODE_2_0_
+
+_TRANSMISSION_MODE_2_		_APERIODIC_MODE_3_0_		_PERIODIC_MODE_1_0_
+				_APERIODIC_MODE_2_0_		_PERIODIC_MODE_2_0_
+
+_TRANSMISSION_MODE_3_		_APERIODIC_MODE_3_0_		_PERIODIC_MODE_1_0_
+				_APERIODIC_MODE_2_0_		_PERIODIC_MODE_2_0_
+
+_TRANSMISSION_MODE_4_		_APERIODIC_MODE_3_1_		_PERIODIC_MODE_1_1_
+				_APERIODIC_MODE_2_2_		_PERIODIC_MODE_2_1_
+				_APERIODIC_MODE_1_2_
+
+_TRANSMISSION_MODE_5_		_APERIODIC_MODE_3_1_		_PERIODIC_MODE_1_1_
+								_PERIODIC_MODE_2_1_
+
+_TRANSMISSION_MODE_6_		_APERIODIC_MODE_3_1_		_PERIODIC_MODE_1_1_
+				_APERIODIC_MODE_2_2_		_PERIODIC_MODE_2_1_
+				_APERIODIC_MODE_1_2_
+
+_TRANSMISSION_MODE_7_		_APERIODIC_MODE_2_0_		_PERIODIC_MODE_1_0_
+				_APERIODIC_MODE_3_0_		_PERIODIC_MODE_2_0_
+
+_TRANSMISSION_MODE_8_		_APERIODIC_MODE_1_2_		_PERIODIC_MODE_1_1_
+				_APERIODIC_MODE_2_2_		_PERIODIC_MODE_2_1_
+				_APERIODIC_MODE_3_1_
+
+_TRANSMISSION_MODE_9_		_APERIODIC_MODE_1_2_		_PERIODIC_MODE_1_1_
+				_APERIODIC_MODE_2_2_		_PERIODIC_MODE_2_1_
+				_APERIODIC_MODE_3_1_
+				_APERIODIC_MODE_3_2_
+				
+_TRANSMISSION_MODE_NR_		_APERIODIC_MODE_1_2_		_PERIODIC_MODE_1_1_
+				_APERIODIC_MODE_2_2_		_PERIODIC_MODE_2_1_
+				_APERIODIC_MODE_3_1_
+				_APERIODIC_MODE_3_2_
+*/
+///Transmitter Info: Refer Above TABLE 1 and TABLE 2 to set the following parameters
+
+
+DL_TransmissionMode=_TRANSMISSION_MODE_NR_;
+DL_UEcategory=8;
+DL_nPorts=8;    		// Its important to fix 
+DL_nLayers=1;
+DL_nCRSPorts=1; 		// Upto TM6 (CRS based modes) DL_nCRSPorts = DL_nPorts will have values [ 1 2 or 4]
+DL_prbBundlingSize=4;           // 0=> wideband
+DL_riRestriction=4;  //MaxRank per UE, according to Codebook and DMRS configurations.
+
+DL_DMRSType = _DMRSTYPE_1_ ; // _DMRSTYPE_2_ or _DMRSTYPE_1_
+DL_DMRSMaxLength = 2; // 1 or 2
+
+DL_nCodeWords=1;
+DL_enableRankAdaptation=true;
+DL_enableLinkAdaptation=true;
+DL_enableModeAdaptation=false;
+
+DL_isSuccessiveMMSE = false;
+DL_isZF =false;
+DL_isBlockDiagonalization = false;
+
+DL_defaultCQI=5;
+
+DL_isSemiOpenloopScheme=false; //Enabled only for TM11
+
+DL_enableMUMIMO=true; //MU-MIMO feature. 
+DL_retainMUMIMOPairsOverFeedbackPeriod=true; //MU-MIMO feature. 
+DL_forceMUMIMO=false; //MU-MIMO feature. 
+DL_nUserPairing=3; // Preferred values {3,6}
+DL_enableCQI0Support=false;
+DL_enableOuterLoopLinkAdaptation=false;
+
+DL_enableOuterLoopLinkAdaptationAtScheduler=true;
+DL_ollaRateThresholds=[5 10];
+DL_targetBLER=[0.1 0.07 0.05];
+DL_windowSize=2;
+
+DL_idealChannel=true;
+DL_errModelFlag = false;
+///Receiver Info
+
+DL_demodulationScheme=_DEMODULATION_SCHEME_MMSE_;
+
+
+///DL CQI Report Configurations
+//Raise aperiodic trigger periodically
+enablePerAperCqiComp=true;
+useReciproPrecode = false;   // set to use reciprocity based precoder (It is parsed in scheduler to choose precoder if available)
+
+// All values are in ms(milli-sec)
+globalAperiodicCQITriggerInms=5; //CQI1 to trigger aperiodic CQI periodically for simulation purpose. 
+
+CQIPMIOffsetInms=4;
+CQIProcessingDelayInms=1;//CQI1 Processing delay at eNodeB after receiving CQI report
+CQIPMIPeriodicityInms=5;
+
+CQIReportingDelayinms=3;
+//TRS configurations
+firstTRSSymbol=6;  
+TRSPeriodicityInms=0; // Set TRSPeriodicityInms=0 to disable TRS
+
+//Currently Rank variables not used for trigger - Dhiv
+RIPeriodicityInms=1;
+RIOffsetInms=0;
+
+BWPartCycles=1;
+CSIRSConfig=1;
+AperiodicMode= _APERIODIC_MODE_3_2_; 
+PeriodicMode=_PERIODIC_MODE_1_1_;
+// Only in LTE
+ReportingModeFor_1_1_=_SUBMODE_1_;//! valid for periodic mode 1_1
+isAltCodeBookEnabledFor4TXEnabled = false; // Alternate code book for port 4 enabling flag
+
+// multiple CSI process parameters
+multipleCSIProcessFlag = false;//true;
+
+// below flags will be used only when multipleCSIProcessFlag = true
+nCSIProcess = 1;//2;  
+NZPCSIConfigurations = [];//[0 1 6 ; 3 5 7];
+NZPcsirsSymPositions = "8 11";// options: DL_nPorts<=12  NZPcsirsSymPositions ="8", DL_nPorts>12 NZPcsirsSymPositions ="8 11"  
+
+//ZPCSIRS
+enableZPcsirs = false;
+ZPcsirsPattern = 2;    //options: ZPcsirsPattern=1 , ZPcsirsPattern=2; 
+ZPcsirsSymPositions = "5";
+
+//ZPCSIConfigurations = [4;1];
+
+enablePTRS = false;
+
+// NR Codebook related
+
+NRCodebookType = _NR_CODEBOOK_TYPE_I_;  //options: _NR_CODEBOOK_TYPE_I_, _NR_CODEBOOK_TYPE_I_MULTIPANEL_,_NR_CODEBOOK_TYPE_II_
+NgN1N2P = [1 2 2 2];	// It should be set according to the arrangement of TXRUs (Check ActiveAntennaSystemConfig.txt)
+Lbeams = 4;
+nPSK = 8;
+
+//If Searchfree is enabled, it will be used for ranks<=4 and Spectral Efficiency is rank>4.
+TypeIMethod = _SPECTRAL_EFFICIENCY_;  //options: _SPECTRAL_EFFICIENCY_, _SEARCHFREE_ 
+TypeIIMethod = _OMP_; //options: _OMP_, _AVIK_, _HALFBEAM_
+CQIFormatIndicator = _SUBBAND_CQI_; 					//options: _SUBBAND_CQI_, _WIDEBAND_CQI_
+PMIFormatIndicator = _SUBBAND_PMI_; 					//options: _SUBBAND_PMI_, _WIDEBAND_PMI_
+
+enableCodebookRestriction = true;
+trainingDurationInSlots=20;
+
+NRCodebookMode = _NR_CODEBOOK_MODE_1_; 
+
+///RS Info
+rsBoostInDB=0;
+fillPRS=false;
+PRSperiodicity=160;
+PRSoffset=0;
+
+/// Port Information  configurable only for TM7.. Ports of all other modes are internally generated
+TM7_DeModPorts="5";
+
+
+//! CCH Reservation
+pdcchCount=2;
+ssBurstSetPeriodicity=2;
+//enablePBCH=false;
+// PssSss can't be enabled along with DMRS modes for now
+//enablePssSss=true;
+enableEPDCCH=false;
+
+
+//! Fallback Mode
+// switches from any SM mode to SFBC during retransmission picking the failed packet.
+enableFallbackMode=false;
+
+//Enabling Applying Power between data in symbols with and without CRS
+enableVarPowInRB=false;
+DL_Pa=0;// Takes values [0,1,2,3,4,5,6,7] which corresponds to [-6,-4.77,-3,0,1,2,3]dB 
+Pb=1; // Takes values 0,1,2,3

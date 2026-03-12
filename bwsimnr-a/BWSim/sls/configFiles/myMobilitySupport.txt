@@ -1,0 +1,44 @@
+measurementBandwidth=50          
+presenceAntennaPort1=false
+neighCellConfig=1          
+servingOffsetIndB=[0 0]            //offset for different types of nodes are taken as different..They are in the order of [BS Pico]
+neighboursOffsetIndB=[0 0]         //offset for different types of nodes are taken as different..They are in the order of [BS Pico]
+
+maxCellsToReport=9
+triggerType=0
+triggerquantity=RSRP
+reportQuantity=SAMEASTRIGGERQUANTITY
+reportInterval=120
+reportAmount=1
+eventIds="{eventA3"
+eventThresholdIndB=[2]
+hysterisisIndB=0
+TTT=80
+
+measurementGapSupport=true
+gapOffset=0
+SameMeasGapConfigForAllUsers=true;
+
+
+L3FilterCoefficientRSRP=1
+L3FilterCoefficientRSRQ=1
+sMeasure=-100
+
+handoverPreparationModeled=true;
+speedStateParamsSupport=false
+tEvaluation=30
+tHystNormal=30
+cellChangeHigh=5
+cellChangeMedium=2
+sfHigh=100
+sfMedium=100
+MeasCycleSCellr10=160
+
+usersOfInterest=[]; //[114	190	152	115	134	153	173	135	154	174	136	212	118	137	117	176	109	157	120	100	158	178	140	159	122	116	103	123	142	161	124	143	162	125	144	163	183	145	164	127	146	108	128	204	280	129	121	110	130	149	168	131	150	169	132	151	170]  // for specific users to simulate
+noUsersToSimulate=-1  //for random users to simulate..This will be called only if you dont set usersOfInterest
+
+distToMoveAfterRLF=-1
+isCalibration=false
+bounceBackPicoRadius=125
+
+

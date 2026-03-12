@@ -1,0 +1,35 @@
+
+# This file is used for adaptively include any library in the simulator..
+# Setting the value to 'false' will remove the library and any relative functions out of the simulator during compilation and linking..
+# If X2 is false , RRM has to be false . If RRM is false X2 need not to be false .
+
+
+#options : true, false
+
+
+# To include libraries optionally ///////////////////
+
+set(USING_ITPP "true")
+
+#////////////////////////////////////////////////////
+
+# To enable MPI (Used for parallel simulation) //////
+
+set(USING_MPI "false")
+
+#////////////////////////////////////////////////////
+
+
+# To enable Security //////
+
+set(USING_SECURITY "false")
+
+#////////////////////////////////////////////////////
+
+
+# To enable detailed cout prints ////
+set(ENABLE_COUT "false")
+
+
+
+

@@ -1,0 +1,95 @@
+/*!Note:   3GPP Het scenario with config #4a to change to #4b you have to change nodecount */
+
+SimulationScenario=_HETNET_		//; simulation sceanario is hetnet/comp scenario can be 	_DEFAULT_,_HETNET_,_COMP3_,_COMP4_,_50_50_ (for 50% orthogonalization)
+
+
+
+
+
+picoAntennaGain=5;			//5dBi antenna gian for Picos
+bsToPicoMinDist=75;			//minimum distance between BS and Pico in small cell case this is not specified
+picoToPicoMinDist=40;			//minimum distance between any two picos(new nodes)
+
+picoToMsMinDist=10;			//10m minimum distance between a outdoor pico and MS it is 3m for indoor pico
+picoToMsMaxDist=40;			//radius of cluster in which pico/relay UEs are placed
+
+
+
+// Planned Pico Dropping
+isPicosPlanned=false;
+plannedPicoLocations=[0 100 250 0 125 50 50 175 200 100];//location x location y
+isPlannedPicoLocationsforASector=true;
+
+/*! %Small cell clustered dropping: 
+some parameters are already part of mySys(Advanced)Config. Dealing with Rest of the parameters here 
+
+Node1 -> small Cells which could be a pico of femto
+Node2 -> UE
+
+  int numberOfClusters: stores the number of clusters in the whole cell/drop area -> no of sectors/enodeB*clusterperSector
+  int numberOfNode1sPerCluster: Node1(Small cells  per cluster), Currently the assumption is that noofpicos(nodeCounts(2))==numberOfClusters*numberOfNode1sPerCluster
+  int numberOfNode2sPerCluster: Number of Node2 (UE) per cluster above assumption hold here nodeCount(3)==numberOfClusters*numberOfNode2sPerCluster
+  
+  double clusterRadius1: Radius to drop node1 from cluster center
+  double clusterRadius2: Radius to drop node1 from cluster center
+
+  double clusterToClusterMinDist: cluster to cluster min Distance
+  double minDistBetWeenNode1s: min distance between Node1s
+  double minDistBetWeenNode1andNode2: Minimum distance between a Small Cell and UE
+  double clusterMinDist1: minimum distance from clusterCenter to Small cell - usually this is zero
+  double clusterMinDist2;minimum distance from clusterCenter to UE - usually this is zero
+
+   
+ double node1MinDistanceToType1Node: min distance between small Cell and Macro Cell
+ double node2MinDistanceToType1Node: min distance between UE and Macro Cell
+ double clusterCentreMinDistanceToType1Node; min distance between cluster center and Macro UE
+  
+  double node1MinDistanceToType2Node;Min distance between Small Cell and macro UE
+  double node2MinDistanceToType2Node;Min distance between UE and Macro UE this is usually not present =0.0
+  double clusterCentreMinDistanceToType2Node;minimum distance between macro UE and cluster center , usually not required
+
+Typical SSE assumptions
+    Radius for small cell dropping in a cluster		50m 
+Radius for UE dropping in a cluster		70m
+Minimum distance (2D distance)		Small cell-small cell: 20m
+		Small cell-UE: 5m
+		Macro –small cell cluster center: 105m
+		Macro – UE : 35m
+		cluster center-cluster center: 2x Radius for small cell dropping in a cluster
+
+
+*/
+
+numberOfClusters=21;
+numberOfNode1sPerCluster=1;
+numberOfNode2sPerCluster=1;
+clusterRadius1=50.0;
+clusterRadius2=70.0;
+clusterToClusterMinDist=100.0; % 2xclusterRadius1
+minDistBetWeenNode1s=20.0;
+minDistBetWeenNode1andNode2=5.0;
+clusterMinDist1=0.0;
+clusterMinDist2=0.0;
+node1MinDistanceToType1Node=55.0; %this is not part of SSE but could be deducted from clusterCentreMinDistanceToType1Node and clusterRadius1
+node2MinDistanceToType1Node=35.0;
+clusterCentreMinDistanceToType1Node=105.0;
+node1MinDistanceToType2Node=5.0;
+node2MinDistanceToType2Node=0.0;
+clusterCentreMinDistanceToType2Node=0.0;
+
+
+
+//cluster dropping parmeters end here
+
+% Relaye Parameters
+maxRelayNodes=21
+relayDrop=INDOOR;      //other possible are INDOOR, OUTDOOR
+relayDropMethod=Random; //other possible are Planned, Random
+relayTxpower=23
+RelayToMacroMinDist=75
+RelayToUEMinDist=3
+RelayToUEMaxDist=10
+intrRelaySep=40
+relayDrop=OUTDOOR
+relayDropMethod=Planned 
+relayUsers= [98 48 43 66 104 78 22 94 47 84 80 26 11 95 24];

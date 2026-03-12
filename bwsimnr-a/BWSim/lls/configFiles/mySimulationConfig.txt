@@ -1,0 +1,65 @@
+// Phy Layer Configs
+
+useFixedSeed = true;
+// seed initialization is random when seed is 0
+seed = 98765;
+outputFilePrintFrequency = 0.001;
+simulationTimeInSec = 0.001;
+
+/* Link Level Simulation Info *//////////////////////////////////////////////////////////////////////
+
+//SNR Details
+minimumSNR=-5;
+maximumSNR=10;
+stepSizeForSNR=1;
+
+simulationType = _CSIRS_;
+
+nTRPs=4;
+repScheme = _FDM_SCHEME_A_; //Data
+
+tbSizeWithCRC=[408];   //CRC will not be added for polar coding.   ("64 120 216 408 704 1568 3072 6144 8448");
+codeRate = [0.5];
+modulationOrder = [2];
+coderType = _LDPC_;
+crcType = CRC_24B;
+nLayers=4;
+prgSize=4;
+dmrsType=1;
+rate = 1.5;
+
+fadingChannelModel = _FADING_CHANNEL_MODEL_TDL_C_;
+
+delaySpread = 100; //ns
+samplingFrequencyInMHz = 15.36;
+subCarrierSpacingInKHz = 15;
+bandwidthInMHz = 10;
+carrierFrequencyInMHz = 4000;
+usableBW = 0.936;
+ueVelocity=0.833; //m/s
+useChannelEstimation=true;
+blockageProbability = 0.1;
+powerOffSetForBlockageInDB=10;
+enableTRPSelection = true;
+enableLinkAdaptation = true;
+enableRankAdaptation = true;
+
+nodeReceiveNoiseFigureInDB = 5;
+nodeTransmitPowerInDBm = 33;
+
+NRCodebookType = _NR_CODEBOOK_TYPE_I_;  //options: _NR_CODEBOOK_TYPE_I_, _NR_CODEBOOK_TYPE_I_MULTIPANEL_, _NR_CODEBOOK_TYPE_II_
+NRCodebookMode = _NR_CODEBOOK_MODE_1_; 
+NgN1N2P = [1 4 2 2];	// It should be set according to the arrangement of TXRUs (Check ActiveAntennaSystemConfig.txt)
+Lbeams = 8;
+nPSK = 16;
+nWideAmp=16;
+nSubAmp=8;
+isType2IdealCoeff = false;
+isType2IdealPrecoder = false;
+portSelectionSamplingSize = 2;
+alpha = 0.25;
+NPhase=4;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+demodulationScheme = _DEMODULATION_SCHEME_MMSE_;

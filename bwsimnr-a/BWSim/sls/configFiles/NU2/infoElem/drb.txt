@@ -1,0 +1,21 @@
+// DRB 0
+drb0_eps_BearerIdentity = 0;
+drb0_Identity = 1;
+drb0_logicalChannelIdentity = 3;
+drb0_trafficType = TRAFFIC_TYPE_INFINITE_BUFFER;
+/* Application associated with Logical Channel i.e. TRAFFIC_TYPE_INFINITE_BUFFER  (works with RLC TM Mode)	    
+						    TRAFFIC_TYPE_VOIP,
+						    TRAFFIC_TYPE_FTP,
+						    TRAFFIC_TYPE_VIDEO,
+						    TRAFFIC_TYPE_HTTP */
+
+// DRB 1
+//drb1_eps_BearerIdentity = 1;
+//drb1_Identity = 1;
+//drb1_logicalChannelIdentity = 10;
+//drb1_trafficType = TRAFFIC_TYPE_FTP;
+
+// DRB 2
+//drb2_eps_BearerIdentity = 0;
+//drb2_Identity = 0;
+//drb2_logicalChannelIdentity = 3;

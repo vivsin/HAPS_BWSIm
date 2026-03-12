@@ -1,0 +1,4 @@
+srb_ToAddModList = [1 2];
+drb_ToAddModList = [0];
+drb_ToReleaseList = [];
+is_Mac_MainConfig = true;

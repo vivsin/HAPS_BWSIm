@@ -1,0 +1,29 @@
+// UL-SCH config
+is_ul_sch_config_present = true;
+maxHARQ_Tx = 1;
+periodicBSR_Timer = 2;
+retxBSR_Timer = 3;
+ttiBundling = false;
+
+
+// DRX config
+is_drx_config_present = true;
+drx_choice = 1;
+onDurationTimer = 1;
+drx_InactivityTimer = 2;
+drx_RetransmissionTimer = 3;
+longDRX_Cycle = 4;
+//drxStart_Offset = ;
+is_short_drx_config = true;
+drxShortCycleTimer = 5;
+shortDRX_Cycle = 6;
+
+// Timer Alignment Timer
+timeAlignmentTimerDedicated = 1;
+
+// Power headroom reporting
+is_power_headroom_reporting_present = true;
+phr_choice = 1;
+periodicPHR_Timer = 1;
+prohibitPHR_Timer = 2;
+dl_PathlossChange = 3;

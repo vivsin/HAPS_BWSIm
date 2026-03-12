@@ -1,0 +1,45 @@
+//! Antenna Parameters
+// assigning TxRU elements
+  
+  /* the antenna elements are indexed in the following form
+   * Example given for (2,2,2,2,2) 32 elements
+   * 
+   * -----panel 1-----      -----panel 3-----
+   * | (10,11) (14,15) |    | (26,27) (30,31) | 
+   * | (8,9)   (12,13) |    | (24,25) (28,29) |
+   *  ----------------       -----------------
+   * 
+   * -----panel 0-----      ----panel 2------
+   * | (2,3)     (6,7) |    | (18,19) (22,23) |
+   * | (0,1)     (4,5) |    | (16,17) (20,21) |
+   * -----------------     -----------------
+   */
+//
+
+AntStructure = {[1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1]}; //! {BS[Mg Ng M N P] UE[Mg Ng M N P] so on ..} 
+TXRUMap = {[1 1] [1 1] [1 1] [1 1]}; //!  [Mp Np] 
+AntSpacing={[2.5 2.5 0.5 0.5] [0.5 0.5 0.5 0.5] [0.5 0.5 0.5 0.5] [0.8 0.8 0.5 0.5]}; 	//! {BS[panal_V_spacing panal_H_spacing elem_ant_Vspacing elem_ant_Hspacing] UE[so on..}
+
+coPolarizationSlantAngle=[0 0 0 0];
+crossPolarizationAngles = { [45 -45] [0 90] [0 90] [0 90] }; //! Empty => [45 -45]
+
+//! TXRU Map provides TXRU virtualization with antenna elements
+//! TXRU count start from 0 to numTXRUs-1 
+//! Matrix shows the placement of corresponding TXRU in columns rows 
+//! Note that TXRUs contain co-polarised elements only
+//! In case of cross polarized AAS two adjacent TXRUs are colocated with cross polarization
+
+// Mechanical vertical tilt of 90 is always maintained for elemental pattern from panel orientation
+orientationPerPanel = { {} {} {} {} }; //! orientation per panel [alpha beta gamma] ;Empty => all zeros
+
+//! Beam Management config
+enableBeamManagement = true;
+
+beamMap = {[1 1] [1 1] [1 2] [1 2]}; //! { BS[Mq Nq] UE[Mq Nq]  //! (Mp*Mg*Np*Ng / (Mq*Nq)) == No.of Beams 
+
+//! TRxP Beam set
+azimuthBeamAngles = {{[0]} {[0]} {[0]} {[0]}};//![-65 -36 -11.25 11.25 36 65] [-56.25 -33.75 -11.25 11.25 33.75 56.25]Horizontal Beam Angles per nodeType [BS UE PicoBS PicoUE]
+zenithBeamAngles = {{[120]} {[0]} {[0]} {[0]}};//! Vertical Beam Angles per nodeType [BS UE PicoBS PicoUE]
+
+//ex azimuthBeamAngles = [-45,-15,15,45]
+//  zenithBeamAngles = [102]

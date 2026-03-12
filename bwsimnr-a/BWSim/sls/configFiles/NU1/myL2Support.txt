@@ -1,0 +1,148 @@
+//This file includes configuration parameters for MAC, RLC and Traffic Generator
+//The RLC configuration given below is used only if RRC_BASED_CONFIG is disabled in SimInclude.h; else the values are read from the corresponding files in infoElem folder.
+
+/*Scheduler Info*/
+maximumActiveUEs=10;
+isPFScheduler=true;
+isWithPFSchedulerV2=true; // 'true' = New version of PF Scheduler, 'false' = old PF Scheduler
+gFactor=0.001;
+updateThroughputEachRBG=true;
+scheduleFrequency=1;   // In terms of slots
+
+/* MAC and RLC Config */
+
+mNumberOfRBPerUE = 1					/* Number of DRB associated with UE */
+mNumberOfLCPerUE = 1    /*Number of LC associated with UE. According to current implementation, it should be always equal to mNumberOfRBPerUE */
+mNumberOfAppPerRB = 1					/* Number of Application associated with Logical Channel */
+
+/* Application associated with Logical Channel i.e. TRAFFIC_TYPE_INFINITE_BUFFER  (works with RLC TM Mode)	    
+						    TRAFFIC_TYPE_VOIP,
+						    TRAFFIC_TYPE_FTP,
+						    TRAFFIC_TYPE_VIDEO,
+
+						    TRAFFIC_TYPE_HTTP */
+
+
+nSymbolsForMinimumTimeAllocation=14;
+// mTrafficType = "{ { TRAFFIC_TYPE_INFINITE_BUFFER   } ... 
+//   		  { TRAFFIC_TYPE_FTP   } }"
+mTrafficType = "{ { TRAFFIC_TYPE_INFINITE_BUFFER } }"
+//mTrafficType = "{ { TRAFFIC_TYPE_CBR } { TRAFFIC_TYPE_CBR } { TRAFFIC_TYPE_CBR } { TRAFFIC_TYPE_CBR } { TRAFFIC_TYPE_CBR } }"
+mSequenceNumberSize = 10 					/* It is configured by RRC to use either 5/10 bit SN */
+
+/* RLC AM Mode Configuration */
+
+mMaxARQRetxThreshold = 1   				/* It is configured by RRC to use 1, 2, 3, 4, 6, 8, 16, 32 as values */
+mPollPDU = 1	     					/* It is configured by RRC to use 4, 8, 16, 32, 64, 128, 256, Infinity as values */
+mPollByte= 25 	     					/* It is configured by RRC to use (in Kilo-Bytes) 25, 50, 75, 100, 125, 250, 375, 500, 750, 1000, 1250, 1500, 2000,3000, infinity as values */
+
+mRLCMode = "{ UM_RLC_MODE }"
+//mRLCMode = "{ UM_RLC_MODE UM_RLC_MODE UM_RLC_MODE UM_RLC_MODE UM_RLC_MODE }"
+// mRLCMode = "{ TM_RLC_MODE ...
+// 	      TM_RLC_MODE  }" 
+				           		/* It is configured by RRC to use the RLC Mode used i.e.
+							    0 - TM_RLC_MODE
+							    1 - UM_RLC_MODE
+							    2 - AM_RLC_MODE */
+							    
+mTReOrderingExpire_AM = 80;
+
+/*  Only for BWSIM-Modified */
+mTReOrderingExpire_UM = 40;			/* t-ReOrdering Expire time for UM Mode need to be greater than time between Fresh Transmission and Re-Tx*/
+
+
+/* HARQ Configuration Parameter */
+
+harqType="IR"
+
+//! \warning 'mNumOfDLHarqProcess' must be >= mFeedbackProcessingTime
+//! \warning 'mNumOfDLHarqProcess' used is upper limited by 'mFeedbackProcessingTime'
+//! Indicate Maximum number of parallel HARQ process possible. (Minimum must be 1)
+DL_mNumOfHarqProcess = 8;
+UL_mNumOfHarqProcess = 8;
+
+//! Indicate number of subframe \b after which Acknowledgement comes to Transmitter (1 indicate immediate re-transmission)
+DL_minDelayBetweenSuccessiveTransmissions = 1;
+UL_minDelayBetweenSuccessiveTransmissions = 1;
+
+//! Specifies Maximum number of Re-transmissions possible. \note In order to make NO-HARQ case, make maximumTransmissions =0
+DL_mMaxNumOfHarqTransmissions = 3;
+UL_mMaxNumOfHarqTransmissions = 3;
+
+mFronthaulHARQDelay=0;
+/* FTP Configuration Parameters.*/
+
+mInitialCongestionWindow = 1		/* Initial congestion window for TCP */
+mLogNormalMean = 14.45			/* File is lognormal distributed. this gives the mean of this distribution */
+mLogNormalStandardDeviation = 0.35	/* this gives standard deviation of the lognormal distribution */
+mInterReadTimeLamba = 10		/* lambda value of inter read time */
+mInterPktTimeLambda = 1000;     // lambda for inter packet delay.
+
+mArrTimeLambda = 300;		/* In terms of users/second - as per 3GPP FTP Model 1 ; Default is 1.0 */
+mFTPModelType = 3;			/* 3GPP Models 1, 2 and 3 are supported */
+mFTPFileSizeType = 1;        /* Possible values = {1, 2, 3}. 1 - Small, 2 - Medium, 3 - Large.
+
+
+/* HTTP Configuration Parameters.*/
+
+/* Size of the main object is distributed as truncated lognormal distribution */
+mMainObjMean = 8.35	// Mean;
+mMainObjSD = 1.37	// Standard Deviation
+mMainObjMax = 2097152
+mMainObjMin = 100
+
+/* Size of the Embedded objects are truncated lognormal distributed */
+mEmbeddedObjMean = 6.17			// Mean;
+mEmbeddedObjSD = 2.36			// Standard Deviation
+mEmbeddedObjMax = 2097152
+mEmbeddedObjMin = 50
+
+/* Number of Embedded objects per page is distributed as truncated pareto */
+mNumEmbeddedObjThreshold = 2
+mNumEmbeddedObjIndex = 1.1
+mNumEmbeddedObjMax = 55
+
+mReadingTimeLambda = 0.033	/* Reading time is distributed as Exponential distribution */
+mParsingTimeLambda = 7.69	/* Parsing time is distributed as Exponential distribution */
+mTCTimeLambda = 20		/* TCTime is ditributed as Exponential distribution */
+
+
+/* Video Configuration Parameters.*/
+
+/* Input Parameters  for Bit Rate are 5.5Mbps, 1.3Mbps and 315Kbps. Quantization Factor = 10 for 5.5Mbps, 20 for 1.3 */
+mBitRate = 5.5Mbps		
+
+
+/* CBR Configuration Parameters.*/
+
+/* Input Parameters  for Constant Bit Rate with delay */
+mPacketSize =1000 			/* in Bytes */
+mInterPacketDelay = 10			/* in MilliSecond */
+
+/* Flag indicating if to using DRX feature or not*/
+mIsDrxEnabled = false
+
+
+// PDCCH Abstraction
+isPDCCHAbstractionEnabled = false;
+
+mIsNonIdealPDCCHEnabled=false;
+periodicPHR_Timer = 5;
+
+mIsTTIBundlingEnabled=false;
+mIsNonAdaptiveHarqEnabled=false;
+
+
+/* L2 CoMP Parameters */
+maxCoMPUEsperMacro = 1;
+
+/* Resource Allocation Type 2 */
+mIsRAT2Enabled=false;
+	
+mPDCPSequenceSize=7;
+mDiscardTimer=10000; /* The values specified by 33.331 are ms50, ms100, ms150, ms300, ms500,ms750, ms1500, infinity.However, we set infinity as 10000 in the main code.*/
+//Sayee: PDCP Sequence Number length should also be provided in the myl2Support.txt
+
+/*! EPDCCH Related Config parameters*/
+mIsEPDCCHEnabled=false;
+fractionOfUEsForEPDCCH=100

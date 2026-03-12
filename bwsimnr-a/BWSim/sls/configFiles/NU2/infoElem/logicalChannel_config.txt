@@ -1,0 +1,6 @@
+// Logical Channel
+is_ul_specific_parameters_present = true;
+priority = 11;
+prioritisedBitRate = 2;
+bucketSizeDuration = 1;
+logicalChannelGroup = 1;

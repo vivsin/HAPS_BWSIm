@@ -1,0 +1,15 @@
+//SSB_PARAMETERS
+isSSBEnabled=true;
+halfFrameIndex=0;// 0 for first half frame & 1 for second half frame. 
+//For 5ms periodicity always set halfFrameIndex to 0
+periodicityInms=20;
+subcarrierSpacingInKHz=15;
+offsetFromPRB0=300;  // In steps of 15k 
+actuallyTransmittedSSB=[3];
+//PBCH_CONTENTS
+kSSB=0//Derive from offsetFromPRB0 and set it..... 
+rmsiPRBOffsetIndx=-1;
+rmsiTimingAndMonitoringOccasionsIndx=TMO_IDX_UNINIT_;
+subCarrierSpacingCommon=15//RMSI SCSinKHz
+
+//SSB-CORESET_PARAMETERS

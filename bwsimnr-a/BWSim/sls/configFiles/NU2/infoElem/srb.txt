@@ -1,0 +1,9 @@
+// SRB 1 Config
+srb1_Identity = 1;
+srb1_rlc_Config = true;
+srb1_logicalChannelConfig = true;
+
+// SRB 2 Config
+srb2_Identity = 2;
+srb2_rlc_Config = true;
+srb2_logicalChannelConfig = true;

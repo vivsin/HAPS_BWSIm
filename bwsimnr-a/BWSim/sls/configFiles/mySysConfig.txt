@@ -1,0 +1,151 @@
+// NOTE: If sysTerrain is changed, then parameters like cellISD, minDist, nodeTransmitPowerInDBm, nodeTypeHeights, indoorNodePercentage,carrierFreqInMHzPerServerNodeType & userVelocity has to be changed.. 
+// 5G terrains _TERRAIN_5G_RURAL_MACRO_ _TERRAIN_5G_URBAN_MACRO_ _TERRAIN_5G_URBAN_MICRO_ _TERRAIN_5G_INDOOR_ _TERRAIN_5G_INDOOR_FACTORY_
+sysTerrain=_TERRAIN_NTN_RURAL_LOS_;
+channelModelType=_MODEL_B_;
+cellISD=43293;
+commonVerticalTilt=90; // Used only for Jakes model. SCM uses 90 as default (additonal is electrical) 
+minDist=35;
+//SCM has its own set of correlations params.. this is not applicable for SCM
+shdwType=_SHADOWTYPE_CORRELATED_;
+
+corrDistance=50;
+siteTositeCorr=0.5;
+
+// Only used in Random drop
+//coverageLength=2000;
+//coverageWidth=2000;
+
+coverageLength=120;
+coverageWidth=60;
+
+//Parsed only for NTN scenarios.
+satelliteBeamRadius=25e3; //coverage radius of each beam in metres.
+beamElevationAngle=90; //elevation angle of central beam in degrees
+nBeamsPerSatellite=19;
+frequencyReUseFactor=1;
+
+useOptionalPathLoss=0; 
+isLMLC = false; // Parsed only for Rural Scenario
+
+//Parsed only for Indoor Factory
+
+InFScenario = _INF_SL_;
+//roomHeight=25;
+roomHeight=10;
+clutterDensity=20;
+clutterHeight=2;
+clutterSize=10;
+
+// parsed only for Indoor Hotspot Scenario.
+indoorScenario=_INDOOR_OPEN_OFFICE_; 
+
+// Only for Hexagonal Drop
+//To choose between Cell-wise/Sector-wise random dropping
+cellWiseDropping=false;
+
+//Enabling and Disabling Cross Links (Recommended to be disabled for any simulation unless required)
+isCrossLinksEnabled=false;
+
+//Node Properties
+nodeCounts=[1 190 0 0];	// number of nodes [bs ms pico picoms relay relayms]  to change from #4a to #4b you need to change only "picoms" and "relayms"% in the case of case 1- config 1 only uncorrelated MS 25/cell, but for calib there will be more UEs
+// Note 1.  To  change from 3gpp config  #4a to #4b you need to change only number of "picoUE" in case of pico simulation  or "relayUE" in case of Relay simulation%
+// Note 2. In the case of case 1- config 1 number of  uncorrelated MS 25/cell, number of picoUE=0
+
+nodeTypeNames="{BS UE1 UE2 UE3"
+nodeDropMethods="{_DROPMETHOD_SATELLITE_ _DROPMETHOD_RANDOM_ _DROPMETHOD_RANDOM_ _DROPMETHOD_RANDOM_"
+nodeCategory="{_NODECATEGORY_SERVERNODE_ _NODECATEGORY_SERVICENODE_ _NODECATEGORY_SERVICENODE_ _NODECATEGORY_SERVICENODE_"
+nodeTransmitPowerInDBm=[48.8 23 23 23]; 	//transmit Power for each nodetype
+
+nodeReceiveNoiseFigureInDB=[5 7 9 9];
+
+nodeTypeHeights=[600e3 1.5 1.5 1.5];		//Heights of each nodetype
+indoorNodePercentage=[0 0 0 0]; 		//percentage of indoor Nodes for each node type
+pedestrianNodePercentage =[0 0 0 0];
+OtoIPenetrationModelLow_HighPercentage = 50;    // its 5GCM parameter for OtoI Low loss percentage
+nodeNumerologies="{[1] [1] [1] [1]}";
+serviceNodeVelocity=[0.833 0 0]; //[8.33 33.33 138.889] //30 kmph, 120 kmph and 500 kmph
+serverNodeVelocity=0;  //Parsed Only for NTN scenarios
+
+// Antenna Configurations Below ............................................................................
+
+//_ANTENNA_TYPE_PARABOLIC_ _ANTENNA_TYPE_OMNI_ _ANTENNA_TYPE_CUSTOM_ _ANTENNA_TYPE_QUASI_ISOTROPIC_ _ANTENNA_TYPE_CIRCULAR_
+
+nodeAntennaType ="{_ANTENNA_TYPE_CIRCULAR_ _ANTENNA_TYPE_OMNI_ _ANTENNA_TYPE_OMNI_ _ANTENNA_TYPE_OMNI_"
+
+//Macro Antenna Parameters Parabolic pattern 3GPP specific
+
+antennaFeederLossIndB=[0 0 0 0];
+nodeAntGainIndB = [30 0 5 5];
+nodeAntennaHorizontalBeamWidth=[4.4127 90 90 90];
+nodeAntennaVerticalBeamWidth=[4.4127 90 90 90];
+nodeAntennaHorizontalMaxAttenuation=[25 25 25 25];
+nodeAntennaVerticalMaxAttenuation=[25 25 25 25];
+customAntennaPatternFile = "nodeAntennaPatterns.txt";
+
+antennaApertureRadius = [1 0.3 0 0];	//Antenna Aperture Radius in metres for _ANTENNA_TYPE_SATELLITE_
+
+antennaTemperature = [290 290 298 298];
+GTRatio = [1.1 -31.6 0 0]; // G/T ratio in dBK^-1// Antenna Configurations End ............................................................................
+
+//These are used to hardcode the path loss and LSPs from file.
+useUpdatedLinkInfo = false;
+locationsFile= nodeLocations.txt;
+lspFile = updatedLSPs.txt;
+linkInfoFile = detailedLinkInfo.txt; 
+
+//Parameters for SoS method
+useSOSForSpCorr=false; //Sum Of Sinusoids Method 
+acfType = EXP; // EXP,GAUSS,COMB
+nCoefficients = 150;   //150, 300, 500, 1000
+
+// Create Building Models (All related configurations are available in buildingInfo.txt)
+createBuildings=false;
+
+// Channel Model
+
+timeDomain=1;
+addChannelGain=1;
+addMultiPathFading=1;
+addNoise=1;
+channelGenerationMethod=_CHANNEL_GENERATION_METHOD_SCM_;
+fadingType=_FADING_TYPE_CORRELATED_;
+enableFlatFading=false;
+addOxygenLoss=false;
+useGroundReflection=false;
+applyFaradayRotation=false;
+//If fixedDoppler is true (also used for system-wide channel info)
+fixedUserVelocity=true;
+// In m/s (recommended values while using SCM UMi=0.833 UMa=8.33 RMa=33.33 with app carrierFreq) 
+//Else
+
+//minimumUserVelocity=0.5
+//maximumUserVelocity=33
+
+minimumUserVelocity=0
+maximumUserVelocity=0
+
+// ChannelModel for different velocity(useful if using mixed veloctity for users)
+pedestrianChannelModel=_FADING_CHANNEL_MODEL_TDL_C_;
+vehicularChannelModel=_FADING_CHANNEL_MODEL_TDL_C_;
+
+// Velocity above which the channelCloud should use the Vehicular channel model
+velocityThreshold=3;
+
+//Delay spread for _FADING_CHANNEL_MODEL_TDL_x_
+delaySpreadTDL = [100 100]; // in nano second, per Channel Model
+
+
+//Quasistatic modelling
+enableQuasistaticChannel=true;
+nSubframesForStaticChannel=1;
+
+//Enabling Antenna Correlation
+enableAntCorrelation=false;
+antenneCorrelation=_ANTENNA_CORRELATION_HIGH_;
+
+//CarrierFreq Info
+carrierFreqInMHzPerServerNodeType=[2000];
+carrierBandwidthInMHz=30;
+samplingFrequencyInMHz=15.36;
+
+

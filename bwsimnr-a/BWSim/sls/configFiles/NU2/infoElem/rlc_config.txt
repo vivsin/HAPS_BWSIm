@@ -1,0 +1,28 @@
+// possible values: amChosen, um_Bi_DirectionalChosen, um_Uni_Directional_ULChosen, um_Uni_Directional_DLChosen,
+/* It is configured by RRC to use the RLC Mode used i.e.
+0 - amChosen
+1 - um_Bi_DirectionalChosen
+2 - um_Uni_Directional_ULChosen
+3 - um_Uni_Directional_DLChosen 
+*/
+drb0_rlc_mode = 0;
+
+drb1_rlc_mode = 1;
+
+// AM related
+// DL_AM_RLC
+t_Reordering = 80;
+t_StatusProhibit = ;
+
+//UL_AM_RLC
+t_PollRetransmit =3 ;
+pollPDU = 1 ;
+pollByte = 25 ;
+maxRetxThreshold = 1 ;
+
+// UM related
+// UL_UM_RLC
+ul_um_sn_FieldLength = 10;
+// DL_UM_RLC
+dl_um_sn_FieldLength = 10;
+dl_um_t_Reordering = 40;

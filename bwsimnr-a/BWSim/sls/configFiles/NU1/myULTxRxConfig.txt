@@ -1,0 +1,71 @@
+/*! TABLE 1: Directions to set the transmit parameters
+
+_TRANSMISSION_MODE_1_    _SINGLE_PORT_CRS_	  	1	1	  	"0"		"0"
+_TRANSMISSION_MODE_4_    _CL_SM_		  	1/2	[2,p]		"0 1"/"0 1 2 3"	"0 1"/"0 1 2 3"
+
+*/
+//! Transmitter Info: Refer Above TABLE 1 to set the following parameters
+
+
+UL_TransmissionMode=_TRANSMISSION_MODE_NR_;
+UL_UEcategory=3;
+UL_nLayers=1;
+UL_nPorts=2;
+UL_nCodeWords=1;
+UL_prbBundlingSize=0;           // 0=> wideband
+
+UL_DMRSType = _DMRSTYPE_1_ ; // _DMRSTYPE_2_ or _DMRSTYPE_1_
+UL_DMRSMaxLength = 2; // 1 or 2
+
+UL_enableLinkAdaptation=true;
+UL_idealChannel=true;
+UL_errModelFlag = false;
+
+UL_enableOuterLoopLinkAdaptationAtScheduler=false;
+
+UL_enableOuterLoopLinkAdaptation=false;
+UL_ollaRateThresholds=[2];
+UL_targetBLER=[0.1 0.1];
+UL_windowSize=2;
+
+UL_enableMUMIMO=false; //MU-MIMO feature. 
+UL_retainMUMIMOPairsOverFeedbackPeriod=true; //MU-MIMO feature. 
+UL_forceMUMIMO=false; //MU-MIMO feature. 
+UL_nUserPairing=3; // Preferred values {3,6}
+UL_MUMIMOpairing = _IDEAL_PAIRING_;//_IDEAL_PAIRING_,_ZERO_FORCING_,_SUCCESSIVE_MMSE_,_BLOCK_DIAGONALISATION_
+
+
+///Receiver Info
+UL_demodulationScheme=_DEMODULATION_SCHEME_MMSE_;
+
+// All values are in ms(milli-sec)
+CQIPMIOffsetInms=2;
+CQIProcessingDelayInms=1;//CQI1 Processing delay at eNodeB after receiving CQI report
+CQIPMIPeriodicityInms=2; // SRS Periodicity
+ReciproMeasureOffsetInms=7;// Offset from slot 0 in UL where the reciprocity updation for DL will start (keep default 0)
+
+/// Uplink Related 
+useReciproPrecode = false;   // set to use reciprocity based precoder (It is parsed in scheduler to choose precoder if available)
+uplinkReferenceSignalScheme=ZadoffChu  // Not parsed currently
+
+enablePTRS = false;
+
+///PowerControl Related
+enablePowerBackoffModel=true;
+powerControlMethod = _POW_CONTROL_LTE_;
+targetPowerForLTEPowerControlindBm = -76;
+pathlossCompensation = 0.8;
+gammaIOT=0.8;
+minimumSINRInDB=0;
+windowSizeForNI=20;
+enableClosedLoopPowerControl=false;
+windowSizeForTPCcmd=5;
+TPC_Type=_ACCUMULATED_;
+
+// SRS Reservation
+SRSPeriodicityInms=5;
+SRSCount=1;
+SRSbandwidthinRBs=8;
+SRScomb=2; //2 or 4
+SRSsoundingbandwidthinRBs=48;
+SRSsoundingbandwidthFirstRB=0;

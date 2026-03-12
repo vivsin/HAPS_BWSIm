@@ -1,0 +1,86 @@
+// HAPS 7-cell Simulation Config (Derived from mySysConfig.txt)
+sysTerrain=_TERRAIN_NTN_RURAL_LOS_;
+channelModelType=_MODEL_B_;
+cellISD=8486;     // Distance to neighbor centers for 23 deg tilt at 20km
+commonVerticalTilt=90;
+minDist=35;
+shdwType=_SHADOWTYPE_CORRELATED_;
+corrDistance=50;
+siteTositeCorr=0.5;
+
+coverageLength=120;
+coverageWidth=60;
+
+// Satellite/HAPS specific
+satelliteBeamRadius=4900; // hexagon radius R such that sqrt(3)R = tilt dist
+beamElevationAngle=90;
+nBeamsPerSatellite=7;
+frequencyReUseFactor=1;
+useOptionalPathLoss=0; 
+isLMLC = false;
+
+// Node Properties
+nodeCounts=[1 70 0 0];	// 1 HAPS gNB (converted to 7 beams/nodes internally) and 70 UEs
+nodeTypeNames="{BS UE1 UE2 UE3"
+nodeDropMethods="{_DROPMETHOD_SATELLITE_ _DROPMETHOD_RANDOM_ _DROPMETHOD_RANDOM_ _DROPMETHOD_RANDOM_"
+nodeCategory="{_NODECATEGORY_SERVERNODE_ _NODECATEGORY_SERVICENODE_ _NODECATEGORY_SERVICENODE_ _NODECATEGORY_SERVICENODE_"
+nodeTransmitPowerInDBm=[48.8 23 23 23];
+nodeReceiveNoiseFigureInDB=[5 7 9 9];
+nodeTypeHeights=[20000 1.5 1.5 1.5];
+indoorNodePercentage=[0 0 0 0];
+pedestrianNodePercentage =[0 0 0 0];
+nodeNumerologies="{[1] [1] [1] [1]}";
+serviceNodeVelocity=[0.833 0 0];
+serverNodeVelocity=0;
+
+// Antenna Configurations
+nodeAntennaType ="{_ANTENNA_TYPE_HAPS_ _ANTENNA_TYPE_OMNI_ _ANTENNA_TYPE_OMNI_ _ANTENNA_TYPE_OMNI_"
+antennaFeederLossIndB=[0 0 0 0];
+nodeAntGainIndB = [0 0 5 5]; // Gain is handled by HAPS pattern logic (Ge_max)
+
+// HAPS Nokia Parameters
+haps_Ge_max = 8.0;
+haps_M_centre = 2;
+haps_M_neighbour = 4;
+haps_N = 2;
+haps_dv = 0.5;
+haps_dh = 0.5;
+haps_phi3dB = 65.0;
+haps_theta3dB = 65.0;
+haps_Am = 30.0;
+haps_SLAv = 30.0;
+haps_cellRadius = 4900; // used for internal hex logic
+
+// Standard AAS config (overridden by HAPS logic mostly)
+customAntennaPatternFile = "nodeAntennaPatterns.txt";
+antennaApertureRadius = [1 0.3 0 0];
+antennaTemperature = [290 290 298 298];
+GTRatio = [1.1 -31.6 0 0];
+
+// Channel Model
+timeDomain=1;
+addChannelGain=1;
+addMultiPathFading=1;
+addNoise=1;
+channelGenerationMethod=_CHANNEL_GENERATION_METHOD_SCM_;
+fadingType=_FADING_TYPE_CORRELATED_;
+enableFlatFading=false;
+addOxygenLoss=false;
+useGroundReflection=false;
+applyFaradayRotation=false;
+fixedUserVelocity=true;
+minimumUserVelocity=0;
+maximumUserVelocity=0;
+pedestrianChannelModel=_FADING_CHANNEL_MODEL_TDL_C_;
+vehicularChannelModel=_FADING_CHANNEL_MODEL_TDL_C_;
+velocityThreshold=3;
+delaySpreadTDL = [100 100];
+enableQuasistaticChannel=true;
+nSubframesForStaticChannel=1;
+enableAntCorrelation=false;
+antenneCorrelation=_ANTENNA_CORRELATION_HIGH_;
+
+//CarrierFreq Info
+carrierFreqInMHzPerServerNodeType=[2000];
+carrierBandwidthInMHz=30;
+samplingFrequencyInMHz=15.36;

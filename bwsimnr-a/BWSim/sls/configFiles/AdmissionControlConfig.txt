@@ -1,0 +1,7 @@
+maxConnectionsPerBS=10
+
+admissionControlMethod=maxConnections;  //other possible candidates are maxLoad, other
+
+initActiveUsersPercentage=30            // initial percentage of users who are active in system
+duration=10                           // periodicity of admission control check
+maxPercentageActivationPerDuration=25   // maximum percentage of users that are allowed to come to active state per fixed duration

@@ -1,0 +1,878 @@
+commit 97a3f0e693fc115e16c658087ef50f92efb3a955
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Wed Mar 11 18:54:31 2026 +0530
+
+    minor fixes to NTN
+
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index d611e65..58e21d2 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -702,8 +702,8 @@ vec NTNSCMLink::getTapPowers()
+ 
+     if(isLOSChannel)
+     {
++        tapPowTemp(0) += K_rice;
+         tapPowTemp /= (K_rice+1);
+-        tapPowTemp(0) += K_rice/(K_rice+1);
+     }
+     //cout << "tapPowTemp : "<< tapPowTemp<<endl;
+     return(tapPowTemp);
+
+commit ee73c8f8fd5759bb9cc3c8cc12aecef96e5e9381
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Fri Mar 6 21:00:02 2026 +0530
+
+    SCM Fix
+
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index bcfba36..d611e65 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -1089,7 +1089,7 @@ getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,
+     {
+         //abort();
+ //         cout<<"check_c3"<<endl;
+-        c3 = getDopplerPhase(r_tx,r_rx,currentTimeInSeconds,isLOSChannel);
++        c3 = getDopplerPhase(r_tx,r_rx,currentTimeInSeconds,isForLOSPath);
+         pathGain *= expj(c3);
+     }
+     //cout << "isLOS : "<< isLOS<<endl;
+
+commit 11e841268d1784d320da0c09e769262a8c5fa0d9
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Fri Mar 6 20:03:03 2026 +0530
+
+    SCM Updates
+
+diff --git a/BWSim/lib/Frozen/mcell/include/SCMLink.h b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+index f2f890e..0464f0f 100644
+--- a/BWSim/lib/Frozen/mcell/include/SCMLink.h
++++ b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+@@ -410,8 +410,10 @@ public:
+     Array<Array<vec>> subpath_Boresight_AoD_angle,subpath_Boresight_AoA_angle,subpath_Boresight_ZoD_angle,subpath_Boresight_ZoA_angle;
+     Array<vec> subpathAOD,subpathZOD,subpathAOA,subpathZOA;
+     double theta_Tx,theta_Rx,phi_Tx,phi_Rx,K_rice;
+-    vec tapPow,tapDelays,cltapPow;
+-    
++    vec tapPow,tapDelays;
++    Array<Array<vec> > subpathAoDZoDAntennaFieldAmplitude,subpathAoAZoAAntennaFieldAmplitude;
++    SCMLargeScaleParameters_S scmLSPs;
++    vec getTapPowers();
+     
+ private:
+     SCMPropagationScenario propagationScenario;
+@@ -425,7 +427,6 @@ private:
+     ivec txTXRUMap,rxTXRUMap;
+     vec txAntSpacing,rxAntSpacing;
+     bool txCrossPolarizationFlag,rxCrossPolarizationFlag;
+-    Array<Array<vec> > subpathAoDZoDAntennaFieldAmplitude,subpathAoAZoAAntennaFieldAmplitude;
+     Array<vec> subpathPhase_fixedpt,subpathFaradayPhase;
+     ivec subPathtypeinCluster,aMap;
+     mat XPR_lin;
+@@ -435,12 +436,11 @@ private:
+     vec txPolarizationAngleInDegreePerAntennaElement,rxPolarizationAngleInDegreePerAntennaElement;
+     bool isKaBandCarrier;
+     int scmRowIndx,scmColIndx;
++    
+ private:
+     void initAntennaParams(Antenna* txAntennaPtr,Antenna* rxAntennaPtr);
+     void initLocationParams(Location_S txLoc,Location_S rxLoc);
+     
+-    vec getTapPowers();
+-    
+     int getClusterCount();
+     double getClusterShadow();
+     double getDelayScaling();
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index 4d56481..bcfba36 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -94,7 +94,8 @@ double NTNSCMLink :: initialize5GChannelFadingParams(int isOutdoortoIndoor, bool
+     //cout << "carrierFrequencyInHz and propagationScenario: "<< carrierFrequencyInHz << "," <<propagationScenario <<endl;
+     initAntennaParams(txAntennaPtr,rxAntennaPtr);
+     initLocationParams(nodeLocationTx,nodeLocationRx);
+-    
++    scmLSPs = scmParams;    
++
+     if(elevationAngle==0)
+     {
+         isReady = true;
+@@ -651,7 +652,7 @@ void NTNSCMLink::generatePowerDelayProfiles(double sigma_DS)
+         //cout << "K_rice :" << K_rice <<endl;
+         vec P_Los = Pn;
+         //cout << "P_Los :" << P_Los <<endl;
+-        P_Los(0) *= K_rice;
++        P_Los(0) += K_rice;
+         //cout << "P_Los :" << P_Los <<endl;
+         P_Los /= (K_rice+1);
+         //cout << "P_Los :" << P_Los <<endl;
+@@ -702,10 +703,9 @@ vec NTNSCMLink::getTapPowers()
+     if(isLOSChannel)
+     {
+         tapPowTemp /= (K_rice+1);
+-        tapPowTemp(0) *= K_rice;
++        tapPowTemp(0) += K_rice/(K_rice+1);
+     }
+     //cout << "tapPowTemp : "<< tapPowTemp<<endl;
+-    cltapPow=tapPowTemp;
+     return(tapPowTemp);
+ }
+ 
+@@ -751,26 +751,13 @@ void NTNSCMLink::generateChannelSubClusters()
+     abort();
+   }
+   
+-  double losTapPow;
+-  bool losPath=false;
+-  
+-  if(tapDelays(0)==0)
+-  {
+-      losPath=true;
+-      losTapPow = tapPow(0);
+-      tapPow.del(0);
+-      tapDelays.del(0);
+-      nTaps = nTaps-1;
+-  }
+-  
+   int nDelays = tapDelays.length();
+   vec tempTapPow = tapPow;
+   
+   Pn_sort_index = sort_index(tempTapPow);
+   //cout << "tempTapPow and Pn_sort_index " << tempTapPow << ","<< Pn_sort_index <<endl;
+   ivec strong2;
+-  if(nDelays)
+-  {
++
+     if(nDelays==1)
+     {
+         strong2 = ivec("0 0");
+@@ -916,16 +903,7 @@ void NTNSCMLink::generateChannelSubClusters()
+     subPathtypeinCluster = clusterSubPathtype;
+     //cout<<"clustersubpathtype_6or3"<<clusterSubPathtype<<endl;
+     aMap = angleMap;
+-  }
+   
+-  if(losPath)
+-  {
+-      tapPow = concat(losTapPow,tapPow);
+-      tapDelays = concat(0.0,tapDelays);
+-      subPathtypeinCluster = concat(0,subPathtypeinCluster);
+-      aMap = concat(0,aMap);
+-      nTaps = tapPow.length();
+-  }
+ }
+ 
+ void NTNSCMLink::computeBoresight2subpath_5Gangles()
+@@ -1304,7 +1282,7 @@ cvec NTNSCMLink::generateTapGainsTxEtoRxE(int currentTxAntennaElement,int curren
+         lostapgain<<cnt<<" "<<losTapGain<<endl;
+         if(nTaps>1)
+         {
+-            tapGain(0) = sqrt(K_rice)*losTapGain;
++            tapGain(0) += sqrt(K_rice)*losTapGain;
+             tapGain = sqrt(1.0/(K_rice+1.0))*tapGain;
+         }
+         else
+
+commit 87347dd0de58c07e0aec5e19402ce9c0d5d3529e
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Fri Mar 6 17:51:56 2026 +0530
+
+    Doppler phase bug fix
+
+diff --git a/BWSim/lib/Frozen/mcell/include/SCMLink.h b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+index 7a3d72d..f2f890e 100644
+--- a/BWSim/lib/Frozen/mcell/include/SCMLink.h
++++ b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+@@ -267,7 +267,7 @@ private:
+     int scmGridIndx;
+     bool isSpConsistEnable;
+     bool isReadyFor5GChannel;
+-//     int isLOS5GChannel;
++    int isLOS5GChannel;
+ //     int isOutdoorToIndoor5GChannel;
+ //     double antennaSpacing;
+     int nClusters5GChannel, nTaps5GChannel,nRaysPerCluster;
+@@ -377,7 +377,7 @@ private:
+     void generate5GChannelSubClusters();	///< Generates subclusters
+     ivec get5GSubPathIndicesofClusters(int setid);	///< Return cluster sub-path Indices
+     
+-    inline dComplex getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,mat& r_rx,int currentTxAntennaElement,int currentRxAntennaElement,double currentTimeInSeconds,bool isChannelGenForRSRP,bool isLOS=false);
++    inline dComplex getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,mat& r_rx,int currentTxAntennaElement,int currentRxAntennaElement,double currentTimeInSeconds,bool isChannelGenForRSRP,bool isForLOSPath=false);
+     dComplex generate5GChannelTapGainPerClusterTxEtoRxE(int tapCnt,int currentTxAntennaElement,int currentRxAntennaElement, double currentTimeInSeconds, bool isChannelGenForRSRP ,int txOrientationId , int rxOrientationId);
+     dComplex generate5GChannelTapGainForLOSClusterTxEtoRxE(int tapCnt, int currentTxAntennaElement, int currentRxAntennaElement, double currentTimeInSeconds, bool isChannelGenForRSRP ,int txOrientationId , int rxOrientationId);
+     
+@@ -392,7 +392,7 @@ private:
+ class NTNSCMLink
+ {
+ public:
+-    bool isLOS;
++    bool isLOSChannel;
+     bool addPathSpecificAntennaGain;
+     vec txLosFieldAmplitude,rxLosFieldAmplitude,txAvgAntGain,rxAvgAntGain;    //Antenna Gains across orientations.
+     bool isFlatFadedChannel;
+@@ -461,7 +461,7 @@ private:
+     
+     cmat generateRotationMatrix(int clusterIndx, int rayIndx);
+     double getDopplerPhase(mat r_tx,mat r_rx,double currentTimeInSeconds,bool isLOS);
+-    dComplex getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,mat& r_rx,int currentTxAntennaElement,int currentRxAntennaElement,double currentTimeInSeconds,bool isChannelGenForRSRP,bool isLOS=false);
++    dComplex getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,mat& r_rx,int currentTxAntennaElement,int currentRxAntennaElement,double currentTimeInSeconds,bool isChannelGenForRSRP,bool isForLOSPath=false);
+     dComplex generateTapGainPerClusterTxEtoRxE(int tapCnt,int currentTxAntennaElement,int currentRxAntennaElement, double currentTimeInSeconds, bool isChannelGenForRSRP,int txOrientationId, int rxOrientationId);
+     dComplex generateTapGainForLOSClusterTxEtoRxE(int tapCnt, int currentTxAntennaElement, int currentRxAntennaElement, double currentTimeInSeconds, bool isChannelGenForRSRP, int txOrientationId, int rxOrientationId);
+ public:
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index 07f884d..4d56481 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -87,7 +87,7 @@ void NTNSCMLink::initLocationParams(Location_S txLoc,Location_S rxLoc)
+ 
+ double NTNSCMLink :: initialize5GChannelFadingParams(int isOutdoortoIndoor, bool isLineOfSight, double dopplerSpread, double carrierFrequency, SCMPropagationScenario propScenario, SCMLargeScaleParameters_S& scmParams, Location_S nodeLocationTx, Location_S nodeLocationRx, Antenna* txAntennaPtr, Antenna* rxAntennaPtr)
+ {   double antenna_gain;
+-    isLOS = isLineOfSight;
++    isLOSChannel = isLineOfSight;
+     carrierFrequencyInHz = carrierFrequency;
+     isKaBandCarrier = isKaBand(carrierFrequencyInHz);
+     propagationScenario = propScenario;
+@@ -102,10 +102,10 @@ double NTNSCMLink :: initialize5GChannelFadingParams(int isOutdoortoIndoor, bool
+     }
+     
+     nRaysPerCluster = 20;
+-    scmRowIndx = 2*int(propagationScenario-11) + int(!isLOS);
++    scmRowIndx = 2*int(propagationScenario-11) + int(!isLOSChannel);
+     scmColIndx = round_i(elevationAngle/10)-1;
+     nClusters = getClusterCount();
+-    scmLinkCondition = (isLOS) ? _LOS_ : _NLOS_;
++    scmLinkCondition = (isLOSChannel) ? _LOS_ : _NLOS_;
+     
+     double UE_sigma_AOD,UE_sigma_AOA,UE_sigma_DS,UE_sigma_ZOA,UE_sigma_ZOD,UE_sigma_SF;
+ 
+@@ -483,7 +483,7 @@ vec NTNSCMLink::generateAzimuthClusterAngles(double sigma_A)
+     }
+     //cout << "nClusters: " << nClusters <<" C :" << C <<endl;
+     
+-    if(isLOS) 
++    if(isLOSChannel) 
+     {
+         //cout << "isLOS v6: " << isLOS <<endl;
+         double K_dB = 10*log10(K_rice);
+@@ -492,7 +492,7 @@ vec NTNSCMLink::generateAzimuthClusterAngles(double sigma_A)
+     
+     vec tapPow = getTapPowers();
+     //cout << "tapPow: " << tapPow <<endl;
+-    return generateClusterAngles(tapPow,sigma_A,C,true,isLOS); // Azimuth angle doesn't consider indoor or outdoor for LOS. 
++    return generateClusterAngles(tapPow,sigma_A,C,true,isLOSChannel); // Azimuth angle doesn't consider indoor or outdoor for LOS. 
+ }
+ 
+ vec NTNSCMLink::generateZenithClusterAngles(double sigma_Z)
+@@ -519,11 +519,11 @@ vec NTNSCMLink::generateZenithClusterAngles(double sigma_Z)
+             break;
+     }
+     
+-    if(isLOS)   
++    if(isLOSChannel)   
+         C = C*(1.3086 + 0.0339*K_dB - 0.0077*pow(K_dB,2) + 0.0002*pow(K_dB,3));         //verified
+   
+     vec tapPow = getTapPowers();
+-    return generateClusterAngles(tapPow,sigma_Z,C,false,isLOS); //only outdoor LOS is considered. 
++    return generateClusterAngles(tapPow,sigma_Z,C,false,isLOSChannel); //only outdoor LOS is considered. 
+ }
+ 
+ vec NTNSCMLink::getXPRMuSigma()
+@@ -642,11 +642,11 @@ void NTNSCMLink::generatePowerDelayProfiles(double sigma_DS)
+     Pn = Pn_dash/sum(Pn_dash);
+     
+     double K_dB = 10*log10(K_rice);
+-    double C_tau = (isLOS) ? 0.7705 - 0.0433*K_dB + 0.0002*pow(K_dB,2) + 0.000017*pow(K_dB,3) : 1.0;            //verified
++    double C_tau = (isLOSChannel) ? 0.7705 - 0.0433*K_dB + 0.0002*pow(K_dB,2) + 0.000017*pow(K_dB,3) : 1.0;            //verified
+     
+     ivec requiredIndices = getIntegers(0,Pn.length()-1);
+     
+-    if(isLOS)
++    if(isLOSChannel)
+     {
+         //cout << "K_rice :" << K_rice <<endl;
+         vec P_Los = Pn;
+@@ -675,7 +675,7 @@ void NTNSCMLink::generatePowerDelayProfiles(double sigma_DS)
+     //cout << "nTap v1: "<< nTaps<<endl;
+     tapDelays = tau(requiredIndices);
+     //=======santhosh==============
+-    if(isLOS)
++    if(isLOSChannel)
+     {
+         tapDelays = tau(requiredIndices)/C_tau;
+         //cout<<"tapDelays"<<tapDelays<<endl;
+@@ -699,7 +699,7 @@ vec NTNSCMLink::getTapPowers()
+     vec tapPowTemp = tapPow;
+     //cout<<"tap powers"<<tapPowTemp<<endl;
+ 
+-    if(isLOS)
++    if(isLOSChannel)
+     {
+         tapPowTemp /= (K_rice+1);
+         tapPowTemp(0) *= K_rice;
+@@ -1078,7 +1078,7 @@ double NTNSCMLink::getDopplerPhase(mat r_tx,mat r_rx,double currentTimeInSeconds
+ }
+ 
+ dComplex NTNSCMLink::
+-getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,mat& r_rx,int currentTxAntennaElement,int currentRxAntennaElement,double currentTimeInSeconds,bool isChannelGenForRSRP,bool isLOS)
++getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,mat& r_rx,int currentTxAntennaElement,int currentRxAntennaElement,double currentTimeInSeconds,bool isChannelGenForRSRP,bool isForLOSPath)
+ {
+     double lamda=lightSpeed/carrierFrequencyInHz;
+     mat txLocationVector = txLocationVectorPerAntennaElement(currentTxAntennaElement),rxLocationVector = rxLocationVectorPerAntennaElement(currentRxAntennaElement);
+@@ -1111,11 +1111,11 @@ getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,
+     {
+         //abort();
+ //         cout<<"check_c3"<<endl;
+-        c3 = getDopplerPhase(r_tx,r_rx,currentTimeInSeconds,isLOS);
++        c3 = getDopplerPhase(r_tx,r_rx,currentTimeInSeconds,isLOSChannel);
+         pathGain *= expj(c3);
+     }
+     //cout << "isLOS : "<< isLOS<<endl;
+-   if(isLOS)
++    if(isForLOSPath)
+     {
+         //abort();
+ 
+@@ -1297,7 +1297,7 @@ cvec NTNSCMLink::generateTapGainsTxEtoRxE(int currentTxAntennaElement,int curren
+     //cout<<"sum tpgainv2 "<<sum(tapGain)<<endl;
+     nlostapgain<<cnt++<<" "<<sum(tapGain)<<endl;
+     //cout << "generateTapGainsTxEtoRxE isLOS : "<< isLOS << endl;
+-    if(isLOS)
++    if(isLOSChannel)
+     {
+         //cout << "generateTapGainsTxEtoRxE isLOS :" << isLOS << endl;
+         dComplex  losTapGain = generateTapGainForLOSClusterTxEtoRxE(0,currentTxAntennaElement,currentRxAntennaElement,currentTimeInSeconds,isChannelGenForRSRP,txOrientationId,rxOrientationId);
+@@ -1341,7 +1341,7 @@ void NTNSCMLink::set(NTNSCMLink* link)
+     aMap = link->aMap,subPathtypeinCluster = link->subPathtypeinCluster;
+     isFlatFadedChannel = link->isFlatFadedChannel,addOxygenLoss = link->addOxygenLoss;
+     applyFaradayRotation = link->applyFaradayRotation;
+-    isLOS = link->isLOS; // added --santhosh
++    isLOSChannel = link->isLOSChannel; // added --santhosh
+     //cout << "isLOS on NTNSCMLink" << isLOS <<endl;
+     //abort();
+     generateSubpathPhases();
+
+commit 5d975065c76fb6d1f4c5bcc83d6207b605780dc1
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Thu Mar 5 21:10:01 2026 +0530
+
+    Unwanted couts
+
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index 31cb8c4..07f884d 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -1110,7 +1110,7 @@ getPathGain(double txFieldAmplitude,double rxFieldAmplitude,cmat& Rot,mat& r_tx,
+     if(!isChannelGenForRSRP)
+     {
+         //abort();
+-        cout<<"check_c3"<<endl;
++//         cout<<"check_c3"<<endl;
+         c3 = getDopplerPhase(r_tx,r_rx,currentTimeInSeconds,isLOS);
+         pathGain *= expj(c3);
+     }
+
+commit 1e05d893c43f52bf5001ba10f86e3e48863f8f69
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Thu Mar 5 17:28:18 2026 +0530
+
+    k_rice for Flatfading
+
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index 01e2969..31cb8c4 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -1302,15 +1302,14 @@ cvec NTNSCMLink::generateTapGainsTxEtoRxE(int currentTxAntennaElement,int curren
+         //cout << "generateTapGainsTxEtoRxE isLOS :" << isLOS << endl;
+         dComplex  losTapGain = generateTapGainForLOSClusterTxEtoRxE(0,currentTxAntennaElement,currentRxAntennaElement,currentTimeInSeconds,isChannelGenForRSRP,txOrientationId,rxOrientationId);
+         lostapgain<<cnt<<" "<<losTapGain<<endl;
+-        //cout << "losTapGain: " << losTapGain <<endl;
+-        tapGain(0) = sqrt(K_rice)*losTapGain;
+-        //tapGain(0) += sqrt(3.59)*losTapGain;
+-        //cout<<"K_factor"<<K_rice<<endl;
+-        //cout << "sqrt(K_rice), sqrt(K_rice)*losTapGain and tapGain(0) : " << sqrt(K_rice) << "," <<sqrt(K_rice)*losTapGain <<"," <<tapGain(0)<<endl;
+-        tapGain = sqrt(1.0/(K_rice+1.0))*tapGain;
+-        //tapGain = sqrt(1.0/4.59)*tapGain;
+-//         cout<<"K_rice: "<<K_rice<<endl;
+-
++        if(nTaps>1)
++        {
++            tapGain(0) = sqrt(K_rice)*losTapGain;
++            tapGain = sqrt(1.0/(K_rice+1.0))*tapGain;
++        }
++        else
++            tapGain(0) = losTapGain;
++        
+     }
+ 
+     if(isnan(sum(abs(tapGain))))
+
+commit 5f805828701b394e40ee0f32a81e02d17b87c13e
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Thu Mar 5 16:53:46 2026 +0530
+
+    NTN SCM fixes
+
+diff --git a/BWSim/lib/Frozen/mcell/include/SCMLink.h b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+index 6835577..7a3d72d 100644
+--- a/BWSim/lib/Frozen/mcell/include/SCMLink.h
++++ b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+@@ -410,6 +410,7 @@ public:
+     Array<Array<vec>> subpath_Boresight_AoD_angle,subpath_Boresight_AoA_angle,subpath_Boresight_ZoD_angle,subpath_Boresight_ZoA_angle;
+     Array<vec> subpathAOD,subpathZOD,subpathAOA,subpathZOA;
+     double theta_Tx,theta_Rx,phi_Tx,phi_Rx,K_rice;
++    vec tapPow,tapDelays,cltapPow;
+     
+     
+ private:
+@@ -418,7 +419,6 @@ private:
+     double txHeight,rxHeight;
+     bool isReady;
+     int nClusters,nTaps,nRaysPerCluster;
+-    vec tapPow,tapDelays,cltapPow;
+     double d3D,muZSD,sectorTilt,elevationAngle,minTau;
+     int txNumOfTxRUs,rxNumOfTxRUs;
+     ivec txAntStructure,rxAntStructure; //[Mg Ng M N P]
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index a1f2c6c..01e2969 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -138,7 +138,6 @@ double NTNSCMLink :: initialize5GChannelFadingParams(int isOutdoortoIndoor, bool
+     UE_sigma_ZOD = min(UE_sigma_ZOD,52.0);
+     
+     generatePowerDelayProfiles(UE_sigma_DS);
+-
+     //cout<<UE_sigma_DS<<" = pow(10.0,"<<scmParams.ds<<") "<<endl<<UE_sigma_AOD<<" = pow(10.0,"<<scmParams.asd<<") "<<endl<<UE_sigma_AOA<<" = pow(10.0,"<<scmParams.asa<<")"<<endl<<UE_sigma_SF<<" = "<<scmParams.sf<<endl<<UE_sigma_ZOA<<" = pow(10.0,"<<scmParams.zsa<<")"<<endl<<UE_sigma_ZOD<<" = pow(10.0,"<<scmParams.zsd<<")"<<endl<<K_rice<<" = inv_dB("<<scmParams.k<<")"<<endl<<muZSD<<" = "<<scmParams.muZSD<<endl<<endl;
+ 
+     //cout<<"UE_sigma_AOD,UE_sigma_AOA,UE_sigma_DS,UE_sigma_ZOA,UE_sigma_ZOD,UE_sigma_SF,K_rice,muZSD"<<UE_sigma_AOD<<","<<UE_sigma_AOA<<","<<UE_sigma_DS<<","<<UE_sigma_ZOA<<","<<UE_sigma_ZOD<<","<<UE_sigma_SF<<","<<K_rice<<","<<muZSD<<endl;
+@@ -159,7 +158,6 @@ double NTNSCMLink :: initialize5GChannelFadingParams(int isOutdoortoIndoor, bool
+     
+     generateCrossPolarizationRatios();
+     generateSubpathPhases();
+-    
+     generateChannelSubClusters();
+     computeBoresight2subpath_5Gangles();
+ //     double thetaAngle;
+@@ -653,7 +651,7 @@ void NTNSCMLink::generatePowerDelayProfiles(double sigma_DS)
+         //cout << "K_rice :" << K_rice <<endl;
+         vec P_Los = Pn;
+         //cout << "P_Los :" << P_Los <<endl;
+-        P_Los(0) += K_rice;
++        P_Los(0) *= K_rice;
+         //cout << "P_Los :" << P_Los <<endl;
+         P_Los /= (K_rice+1);
+         //cout << "P_Los :" << P_Los <<endl;
+@@ -685,7 +683,7 @@ void NTNSCMLink::generatePowerDelayProfiles(double sigma_DS)
+     //=============================
+     if(isFlatFadedChannel)
+     {
+-        tapPow.set_length(1,true);nTaps = 1;
++        tapPow=ones(1);nTaps = 1;
+         tapDelays.set_length(1,true);
+     }
+ }
+@@ -704,7 +702,7 @@ vec NTNSCMLink::getTapPowers()
+     if(isLOS)
+     {
+         tapPowTemp /= (K_rice+1);
+-        tapPowTemp(0) += K_rice/(K_rice+1);
++        tapPowTemp(0) *= K_rice;
+     }
+     //cout << "tapPowTemp : "<< tapPowTemp<<endl;
+     cltapPow=tapPowTemp;
+@@ -753,159 +751,181 @@ void NTNSCMLink::generateChannelSubClusters()
+     abort();
+   }
+   
+-  int nDelays = tapDelays.length();
+-  //cout << "nDelays and tapDelays " << nDelays << ","<< tapDelays <<endl;
+-  vec tempTapPow = getTapPowers();
+-
+-  Pn_sort_index = sort_index(tempTapPow);
+-  //cout << "tempTapPow and Pn_sort_index " << tempTapPow << ","<< Pn_sort_index <<endl;
+-  ivec strong2;
+-  
+-  if(nDelays==1)
+-  {
+-      strong2 = ivec("0 0");
+-  }
+-  else
+-  {
+-      strong2 = Pn_sort_index.mid(Pn_sort_index.length()-2,2);
+-      // strong 
+-      //cout << "strong2 : " << strong2 << endl;
+-      if (tapDelays(strong2(0))>tapDelays(strong2(1)))
+-      {
+-          int tt = strong2(0);
+-          strong2(0) = strong2(1);
+-          strong2(1) = tt;
+-      }
+-  }
+-  //cout << "strong2 : " << strong2 << endl;
+-  n0 = strong2(0); // Strong 2 cluster indices 
+-  n1 = strong2(1);
+-
+-  Q = 4;
+-  vec newDelays(Q);
+-  
+-  double c_DS = getRMSClusterDelaySpread(); //cluster delay spread see 3GPP TR 38.811
+-  //cout << "c_DS : " << c_DS << endl;
+-  subdelay1 = 1.28*c_DS*1e-9;//5e-9; 
+-  subdelay2 = 2.56*c_DS*1e-9;//10e-9;                           //verified
++  double losTapPow;
++  bool losPath=false;
+   
+-  newDelays(0) = tapDelays(n0)+subdelay1;
+-  newDelays(1) = tapDelays(n0)+subdelay2;
+-  newDelays(2) = tapDelays(n1)+subdelay1;
+-  newDelays(3) = tapDelays(n1)+subdelay2;
+-  //cout << "newDelays : " << newDelays << endl;
+-  /// Find the locations into which new delays falls in a sorted order
+-  ivec newIndex(newDelays.length());
+-  tmp1 = tapDelays;
+-  
+-  append(tmp1,newDelays);
+-
+-  ivec newDelayIndex = sort_index(tmp1);    
+-  sort(tmp1);  
+-  newIndex =  find(newDelayIndex,getIntegers(newDelayIndex.length()-4,newDelayIndex.length()-1));
+-  
+-  allDelays = tmp1;
+-  //cout << "allDelays : " << allDelays << endl;
+-  newtapPow5GChannel =  tempTapPow;
+-  //cout << "newtapPow5GChannel : " << newtapPow5GChannel << endl;
+-  subPathIndices = getSubPathIndicesofClusters(1);
+-  //cout << "subPathIndices : " << subPathIndices << endl;
+-  newtapPow5GChannel(n0)=tempTapPow(n0)*(subPathIndices.length()/double(M));
+-  newtapPow5GChannel(n1)=tempTapPow(n1)*(subPathIndices.length()/double(M));
+-  //cout << "newtapPow5GChannel : " << newtapPow5GChannel << endl;
+-  clusterSubPathtype  = zeros_i(nDelays);
+-  clusterSubPathtype(n0) = clusterSubPathtype(n1) = 1;
+-  //cout << "clusterSubPathtype : " << clusterSubPathtype << endl;
+-  angleMap = getIntegers(0,nDelays-1);
+-  //cout << "angleMap : " << angleMap << endl;
+-  ivec newIndex1 = newIndex;
+-  //cout << "newIndex1 : " << newIndex1 << endl;
+-  sort(newIndex1);
+-  //cout << "newIndex1 : " << newIndex1 << endl;
+-  for(int indx =0;indx<Q;indx++)
++  if(tapDelays(0)==0)
+   {
+-    newtapPow5GChannel.ins(newIndex1(indx),-1);
+-    clusterSubPathtype.ins(newIndex1(indx),-1);
+-    angleMap.ins(newIndex1(indx),-1);
++      losPath=true;
++      losTapPow = tapPow(0);
++      tapPow.del(0);
++      tapDelays.del(0);
++      nTaps = nTaps-1;
+   }
+-  //cout << "newtapPow5GChannel, clusterSubPathtype and angleMap : " << newtapPow5GChannel <<","<<clusterSubPathtype << "and"<<angleMap<< endl;
+-  ///find the index of each of the originial clusters in the new sorted order (of delays)
+-  ivec newClusterIndex = remove(newDelayIndex,newIndex);
+-  //cout << "newClusterIndex : " << newClusterIndex << endl;
+-  s0 = n0;
+-  s1 = n1;
+-  for (int i =0; i<newDelays.length();i++)
+-    if (tapDelays(n1)>newDelays(i))
+-      s1 = s1+1;
+-
+-  subPathIndices = getSubPathIndicesofClusters(2); 
+-  clusterSubPathtype(newIndex(0)) = 2; 
+-  newtapPow5GChannel(newIndex(0)) = tempTapPow(n0)*subPathIndices.length()/M;
+-  angleMap(newIndex(0)) = n0;
+   
+-  subPathIndices = getSubPathIndicesofClusters(3); 
+-  clusterSubPathtype(newIndex(3)) = 3;
+-  newtapPow5GChannel(newIndex(3)) = tempTapPow(n1)*subPathIndices.length()/M;
+-  angleMap(newIndex(3)) = n1;
++  int nDelays = tapDelays.length();
++  vec tempTapPow = tapPow;
+   
+-  if (abs(allDelays(newIndex(1)) - (allDelays(s0) + subdelay2)) < abs(allDelays(newIndex(1)) - (allDelays(s1) + subdelay1))) // sub delay2 is 10 ns
+-  {
+-    subPathIndices = getSubPathIndicesofClusters(3);
+-    clusterSubPathtype(newIndex(1)) = 3;
+-    newtapPow5GChannel(newIndex(1)) = tempTapPow(n0)*subPathIndices.length()/M;
+-    angleMap(newIndex(1)) = n0;
+-    subPathIndices = getSubPathIndicesofClusters(2);
+-    clusterSubPathtype(newIndex(2)) = 2;
+-    newtapPow5GChannel(newIndex(2)) = tempTapPow(n1)*subPathIndices.length()/M;
+-    angleMap(newIndex(2)) = n1;
+-  }
+-  else
++  Pn_sort_index = sort_index(tempTapPow);
++  //cout << "tempTapPow and Pn_sort_index " << tempTapPow << ","<< Pn_sort_index <<endl;
++  ivec strong2;
++  if(nDelays)
+   {
+-    subPathIndices = getSubPathIndicesofClusters(2);
+-    clusterSubPathtype(newIndex(1)) = 2;
+-    newtapPow5GChannel(newIndex(1)) = tempTapPow(n1)*subPathIndices.length()/M;
+-    angleMap(newIndex(1)) = n1;
+-    subPathIndices = getSubPathIndicesofClusters(3);
+-    clusterSubPathtype(newIndex(2)) = 3;
+-    newtapPow5GChannel(newIndex(2)) = tempTapPow(n0)*subPathIndices.length()/M;
+-    angleMap(newIndex(2)) = n0;
+-  }
+-  
+-  // In case of only one tap remains, assuming n0=n1, repeated tap is deleted here.
+-  // if 
++    if(nDelays==1)
++    {
++        strong2 = ivec("0 0");
++    }
++    else
++    {
++        strong2 = Pn_sort_index.mid(Pn_sort_index.length()-2,2);
++        // strong 
++        //cout << "strong2 : " << strong2 << endl;
++        if (tapDelays(strong2(0))>tapDelays(strong2(1)))
++        {
++            int tt = strong2(0);
++            strong2(0) = strong2(1);
++            strong2(1) = tt;
++        }
++    }
++    //cout << "strong2 : " << strong2 << endl;
++    n0 = strong2(0); // Strong 2 cluster indices 
++    n1 = strong2(1);
+ 
+-  if(tapDelays.length() == 1)
+-  {
+-    ivec detindx;
+-    detindx.set_length(2);
+-    detindx(0)= find(clusterSubPathtype,3);
+-    detindx(1)= find(clusterSubPathtype,2);
+-    detindx =-1*detindx;
+-    sort(detindx);
+-    detindx =-1*detindx;
++    Q = 4;
++    vec newDelays(Q);
++    
++    double c_DS = getRMSClusterDelaySpread(); //cluster delay spread see 3GPP TR 38.811
++    //cout << "c_DS : " << c_DS << endl;
++    subdelay1 = 1.28*c_DS*1e-9;//5e-9; 
++    subdelay2 = 2.56*c_DS*1e-9;//10e-9;                           //verified
++    
++    newDelays(0) = tapDelays(n0)+subdelay1;
++    newDelays(1) = tapDelays(n0)+subdelay2;
++    newDelays(2) = tapDelays(n1)+subdelay1;
++    newDelays(3) = tapDelays(n1)+subdelay2;
++    //cout << "newDelays : " << newDelays << endl;
++    /// Find the locations into which new delays falls in a sorted order
++    ivec newIndex(newDelays.length());
++    tmp1 = tapDelays;
++    
++    append(tmp1,newDelays);
++
++    ivec newDelayIndex = sort_index(tmp1);    
++    sort(tmp1);  
++    newIndex =  find(newDelayIndex,getIntegers(newDelayIndex.length()-4,newDelayIndex.length()-1));
+     
+-    for(int i=0;i<detindx.length();i++)
++    allDelays = tmp1;
++    //cout << "allDelays : " << allDelays << endl;
++    newtapPow5GChannel =  tempTapPow;
++    //cout << "newtapPow5GChannel : " << newtapPow5GChannel << endl;
++    subPathIndices = getSubPathIndicesofClusters(1);
++    //cout << "subPathIndices : " << subPathIndices << endl;
++    newtapPow5GChannel(n0)=tempTapPow(n0)*(subPathIndices.length()/double(M));
++    newtapPow5GChannel(n1)=tempTapPow(n1)*(subPathIndices.length()/double(M));
++    //cout << "newtapPow5GChannel : " << newtapPow5GChannel << endl;
++    clusterSubPathtype  = zeros_i(nDelays);
++    clusterSubPathtype(n0) = clusterSubPathtype(n1) = 1;
++    //cout << "clusterSubPathtype : " << clusterSubPathtype << endl;
++    angleMap = getIntegers(0,nDelays-1);
++    //cout << "angleMap : " << angleMap << endl;
++    ivec newIndex1 = newIndex;
++    //cout << "newIndex1 : " << newIndex1 << endl;
++    sort(newIndex1);
++    //cout << "newIndex1 : " << newIndex1 << endl;
++    for(int indx =0;indx<Q;indx++)
++    {
++        newtapPow5GChannel.ins(newIndex1(indx),-1);
++        clusterSubPathtype.ins(newIndex1(indx),-1);
++        angleMap.ins(newIndex1(indx),-1);
++    }
++    //cout << "newtapPow5GChannel, clusterSubPathtype and angleMap : " << newtapPow5GChannel <<","<<clusterSubPathtype << "and"<<angleMap<< endl;
++    ///find the index of each of the originial clusters in the new sorted order (of delays)
++    ivec newClusterIndex = remove(newDelayIndex,newIndex);
++    //cout << "newClusterIndex : " << newClusterIndex << endl;
++    s0 = n0;
++    s1 = n1;
++    for (int i =0; i<newDelays.length();i++)
++        if (tapDelays(n1)>newDelays(i))
++        s1 = s1+1;
++
++    subPathIndices = getSubPathIndicesofClusters(2); 
++    clusterSubPathtype(newIndex(0)) = 2; 
++    newtapPow5GChannel(newIndex(0)) = tempTapPow(n0)*subPathIndices.length()/M;
++    angleMap(newIndex(0)) = n0;
++    
++    subPathIndices = getSubPathIndicesofClusters(3); 
++    clusterSubPathtype(newIndex(3)) = 3;
++    newtapPow5GChannel(newIndex(3)) = tempTapPow(n1)*subPathIndices.length()/M;
++    angleMap(newIndex(3)) = n1;
++    
++    if (abs(allDelays(newIndex(1)) - (allDelays(s0) + subdelay2)) < abs(allDelays(newIndex(1)) - (allDelays(s1) + subdelay1))) // sub delay2 is 10 ns
++    {
++        subPathIndices = getSubPathIndicesofClusters(3);
++        clusterSubPathtype(newIndex(1)) = 3;
++        newtapPow5GChannel(newIndex(1)) = tempTapPow(n0)*subPathIndices.length()/M;
++        angleMap(newIndex(1)) = n0;
++        subPathIndices = getSubPathIndicesofClusters(2);
++        clusterSubPathtype(newIndex(2)) = 2;
++        newtapPow5GChannel(newIndex(2)) = tempTapPow(n1)*subPathIndices.length()/M;
++        angleMap(newIndex(2)) = n1;
++    }
++    else
+     {
+-      newtapPow5GChannel.del(detindx(i));
+-      allDelays.del(detindx(i));
+-      angleMap.del(detindx(i));
+-      clusterSubPathtype.del(detindx(i));
++        subPathIndices = getSubPathIndicesofClusters(2);
++        clusterSubPathtype(newIndex(1)) = 2;
++        newtapPow5GChannel(newIndex(1)) = tempTapPow(n1)*subPathIndices.length()/M;
++        angleMap(newIndex(1)) = n1;
++        subPathIndices = getSubPathIndicesofClusters(3);
++        clusterSubPathtype(newIndex(2)) = 3;
++        newtapPow5GChannel(newIndex(2)) = tempTapPow(n0)*subPathIndices.length()/M;
++        angleMap(newIndex(2)) = n0;
+     }
++    
++    // In case of only one tap remains, assuming n0=n1, repeated tap is deleted here.
++    // if 
++
++    if(tapDelays.length() == 1)
++    {
++        ivec detindx;
++        detindx.set_length(2);
++        detindx(0)= find(clusterSubPathtype,3);
++        detindx(1)= find(clusterSubPathtype,2);
++        detindx =-1*detindx;
++        sort(detindx);
++        detindx =-1*detindx;
++        
++        for(int i=0;i<detindx.length();i++)
++        {
++        newtapPow5GChannel.del(detindx(i));
++        allDelays.del(detindx(i));
++        angleMap.del(detindx(i));
++        clusterSubPathtype.del(detindx(i));
++        }
++    }
++    if(abs(sum(tempTapPow)-sum(newtapPow5GChannel))>0.0000001)
++    {
++        cout << "\n\n\ngenerate5GChannelSubClusters: Error in power calculation while adjusting for subclusters --- exiting program" << endl;
++        exit(0);
++    }
++
++    tapPow = newtapPow5GChannel; 
++    //cout<<"newtapPow5GChannel_power"<<  tapPow<<endl;
++    nTaps = tapPow.length();
++    //cout<<"tapPow.length()"<<tapPow.length()<<endl;
++    tapDelays = allDelays;
++    subPathtypeinCluster = clusterSubPathtype;
++    //cout<<"clustersubpathtype_6or3"<<clusterSubPathtype<<endl;
++    aMap = angleMap;
+   }
+-  if(abs(sum(tempTapPow)-sum(newtapPow5GChannel))>0.0000001)
++  
++  if(losPath)
+   {
+-    cout << "\n\n\ngenerate5GChannelSubClusters: Error in power calculation while adjusting for subclusters --- exiting program" << endl;
+-    exit(0);
++      tapPow = concat(losTapPow,tapPow);
++      tapDelays = concat(0.0,tapDelays);
++      subPathtypeinCluster = concat(0,subPathtypeinCluster);
++      aMap = concat(0,aMap);
++      nTaps = tapPow.length();
+   }
+-
+-  tapPow = newtapPow5GChannel; 
+-  //cout<<"newtapPow5GChannel_power"<<  tapPow<<endl;
+-  nTaps = tapPow.length();
+-  //cout<<"tapPow.length()"<<tapPow.length()<<endl;
+-  tapDelays = allDelays;
+-  subPathtypeinCluster = clusterSubPathtype;
+-  //cout<<"clustersubpathtype_6or3"<<clusterSubPathtype<<endl;
+-  aMap = angleMap;
+ }
+ 
+ void NTNSCMLink::computeBoresight2subpath_5Gangles()
+@@ -1283,13 +1303,13 @@ cvec NTNSCMLink::generateTapGainsTxEtoRxE(int currentTxAntennaElement,int curren
+         dComplex  losTapGain = generateTapGainForLOSClusterTxEtoRxE(0,currentTxAntennaElement,currentRxAntennaElement,currentTimeInSeconds,isChannelGenForRSRP,txOrientationId,rxOrientationId);
+         lostapgain<<cnt<<" "<<losTapGain<<endl;
+         //cout << "losTapGain: " << losTapGain <<endl;
+-        tapGain(0) += sqrt(K_rice)*losTapGain;
++        tapGain(0) = sqrt(K_rice)*losTapGain;
+         //tapGain(0) += sqrt(3.59)*losTapGain;
+         //cout<<"K_factor"<<K_rice<<endl;
+         //cout << "sqrt(K_rice), sqrt(K_rice)*losTapGain and tapGain(0) : " << sqrt(K_rice) << "," <<sqrt(K_rice)*losTapGain <<"," <<tapGain(0)<<endl;
+         tapGain = sqrt(1.0/(K_rice+1.0))*tapGain;
+         //tapGain = sqrt(1.0/4.59)*tapGain;
+-        cout<<"K_rice: "<<K_rice<<endl;
++//         cout<<"K_rice: "<<K_rice<<endl;
+ 
+     }
+ 
+
+commit 4180f1752767fd1e16aced86703eefce5cbd93cd
+Author: dhivagar <dhivagar.b@cewit.org.in>
+Date:   Wed Mar 4 22:26:08 2026 +0530
+
+    NTN debug
+
+diff --git a/BWSim/lib/Frozen/mcell/include/SCMLink.h b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+index 69b075a..6835577 100644
+--- a/BWSim/lib/Frozen/mcell/include/SCMLink.h
++++ b/BWSim/lib/Frozen/mcell/include/SCMLink.h
+@@ -406,6 +406,12 @@ public:
+     Antenna txAntenna;
+     Antenna rxAntenna;
+     
++    vec clusterAOD,clusterZOD,clusterAOA,clusterZOA;
++    Array<Array<vec>> subpath_Boresight_AoD_angle,subpath_Boresight_AoA_angle,subpath_Boresight_ZoD_angle,subpath_Boresight_ZoA_angle;
++    Array<vec> subpathAOD,subpathZOD,subpathAOA,subpathZOA;
++    double theta_Tx,theta_Rx,phi_Tx,phi_Rx,K_rice;
++    
++    
+ private:
+     SCMPropagationScenario propagationScenario;
+     Location_S linkStartLoc,linkEndLoc;
+@@ -413,20 +419,16 @@ private:
+     bool isReady;
+     int nClusters,nTaps,nRaysPerCluster;
+     vec tapPow,tapDelays,cltapPow;
+-    vec clusterAOD,clusterZOD,clusterAOA,clusterZOA;
+     double d3D,muZSD,sectorTilt,elevationAngle,minTau;
+     int txNumOfTxRUs,rxNumOfTxRUs;
+     ivec txAntStructure,rxAntStructure; //[Mg Ng M N P]
+     ivec txTXRUMap,rxTXRUMap;
+     vec txAntSpacing,rxAntSpacing;
+     bool txCrossPolarizationFlag,rxCrossPolarizationFlag;
+-    Array<Array<vec>> subpath_Boresight_AoD_angle,subpath_Boresight_AoA_angle,subpath_Boresight_ZoD_angle,subpath_Boresight_ZoA_angle;
+-    Array<vec> subpathAOD,subpathZOD,subpathAOA,subpathZOA;
+     Array<Array<vec> > subpathAoDZoDAntennaFieldAmplitude,subpathAoAZoAAntennaFieldAmplitude;
+     Array<vec> subpathPhase_fixedpt,subpathFaradayPhase;
+     ivec subPathtypeinCluster,aMap;
+     mat XPR_lin;
+-    double theta_Tx,theta_Rx,phi_Tx,phi_Rx,K_rice;
+     vec thetaTxLos,thetaRxLos,phiTxLos,phiRxLos;      //LOS angles for all orientations.
+     
+     Array<mat> txLocationVectorPerAntennaElement,rxLocationVectorPerAntennaElement;
+diff --git a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+index 4ed0806..a1f2c6c 100644
+--- a/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
++++ b/BWSim/lib/Frozen/mcell/src/NTNSCMLink.cpp
+@@ -1289,7 +1289,7 @@ cvec NTNSCMLink::generateTapGainsTxEtoRxE(int currentTxAntennaElement,int curren
+         //cout << "sqrt(K_rice), sqrt(K_rice)*losTapGain and tapGain(0) : " << sqrt(K_rice) << "," <<sqrt(K_rice)*losTapGain <<"," <<tapGain(0)<<endl;
+         tapGain = sqrt(1.0/(K_rice+1.0))*tapGain;
+         //tapGain = sqrt(1.0/4.59)*tapGain;
+-        //cout<<"K_rice: "<<K_rice<<endl;
++        cout<<"K_rice: "<<K_rice<<endl;
+ 
+     }
+ 

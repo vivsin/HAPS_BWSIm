@@ -1,0 +1,6 @@
+BS_hPattern=[0];
+BS_vPattern=[0];
+UE1_hPattern=[0];
+UE1_vPattern=[0];
+UE2_hPattern=[0];
+UE2_vPattern=[0];

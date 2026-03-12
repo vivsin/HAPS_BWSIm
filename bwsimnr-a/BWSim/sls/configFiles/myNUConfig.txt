@@ -1,0 +1,12 @@
+//! 5G-NR Numerology related configuration file 
+
+nuIDs=[1 2 3 4];
+subcarrierSpacingInKHz=[15 30 60 120];
+dlUsableBW=[0.936 0.9 0.95 0.9216];
+ulUsableBW=[0.936 0.9 0.95 0.9216];
+ttiDurationInSec=[1e-3 0.5e-3 0.25e-3 0.125e-3];
+CPDurationInSec={[5.208e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 5.208e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6] [5.208e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 5.208e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6 4.688e-6]};
+configFileFolder="{NU1 NU2 NU1 NU2";
+CellConfig={[2 11 2 2] [2 11 2 2] [2 11 2 2] [2 11 2 2]}; //[DLSlots DLSymbols ULSlots ULSymbols] Keep this blank if not used
+SFI={[1 1 1 1 1 1 1 1 1 1 1 -2 0 0] [1 1 1 1 1 1 1 1 1 1 1 -2 0 0][1 1 1 1 1 1 1 1 1 1 1 -2 0 0] [1 1 1 1 1 1 1 1 1 1 1 -2 0 0]} //bitmap {1:DL, 0:UL, -2:Flexible}
+CellConfigPeriodicityInSec=[0.5e-2 0.25e-2 0.125e-2 0.0625e-2];
